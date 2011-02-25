@@ -1,7 +1,6 @@
 { "name" : "cookies"
-, "version" : "0.1.0"
-, "description" : "Signed and unsigned cookies using Keygrip."
-, "dependencies" : { "keygrip" : "*" }
+, "version" : "0.1.1"
+, "description" : "Cookies, optionally signed using Keygrip."
 , "main" : "./index"
 , "engines": [ "node" ]
 }
