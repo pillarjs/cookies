@@ -1,6 +1,6 @@
 {
   "name": "cookies",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Cookies, optionally signed using Keygrip.",
   "main": "./index",
   "engines": [
