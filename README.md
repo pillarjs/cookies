@@ -39,12 +39,12 @@ If the _name_ is omitted, an outbound header with an expired date is used to del
 
 If the _options_ object is provided, it will be used to generate the outbound cookie header as follows:
 
-* `expires`: a `Date` object indicating the cookie's expiration date
-* `path`: a string indicating the path of the cookie
-* `domain`: a string indicating the domain of the cookie
-* `secure`: a boolean indicating whether the cookie is only to be sent over HTTPS
-* `httpOnly`: a boolean indicating whether the cookie is only to be sent over HTTP(S), and not made available to client JavaScript
-* `signed`: a boolean indicating whether the cookie is to be signed. If this is true, another cookie of the same name with the `.sig` suffix appended will also be sent, with a 27-byte url-safe base64 SHA1 value representing the hash of _<cookie-name>_ + `=` + _<cookie-value>_ against the first [Keygrip](https://github.com/jed/keygrip) key. This signature key is used to detect tampering the next time a cookie is received.
+* `expires`: a `Date` object indicating the cookie's expiration date (expires at the end of session by default).
+* `path`: a string indicating the path of the cookie (`/` by default).
+* `domain`: a string indicating the domain of the cookie (no default).
+* `secure`: a boolean indicating whether the cookie is only to be sent over HTTPS (`false` by default).
+* `httpOnly`: a boolean indicating whether the cookie is only to be sent over HTTP(S), and not made available to client JavaScript (`false` by default).
+* `signed`: a boolean indicating whether the cookie is to be signed (`false` by default). If this is true, another cookie of the same name with the `.sig` suffix appended will also be sent, with a 27-byte url-safe base64 SHA1 value representing the hash of _<cookie-name>_ + `=` + _<cookie-value>_ against the first [Keygrip](https://github.com/jed/keygrip) key. This signature key is used to detect tampering the next time a cookie is received.
 
 ## Example
 
