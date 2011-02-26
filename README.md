@@ -11,6 +11,18 @@ Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S
 
     $ npm install cookies
     
+## Features
+
+This is the next version of the now deprecated [cookie-node](https://github.com/jed/cookie-node) library, with the following improvements:
+
+* **Lazy**: Since cookie verification against multiple keys could be expensive, cookies are only verified lazily when accessed, not eagerly on each request.
+
+* **Unobtrusive**: Signed cookies are stored the same way as unsigned cookies, instead of in an obfuscated signing format. An additional signature cookie is stored for each signed cookie, using a standard naming convention (_cookie-name_`.sig`). This allows other libraries to access the original cookies without having to know the signing mechanism.
+
+* **Agnostic**: This library is optimized for use with [Keygrip](https://github.com/jed/keygrip), but does not require it; you can implement your own signing scheme instead if you like and use this library only to read/write cookies. Factoring the signing into a separate library encourages code reuse and allows you to use the same signing library for other areas where signing is needed, such as in URLs.
+
+* **Up-to-date**: Whereas the last library was built starting with an v0.1.* version of node without crypto or buffers, this one was built starting with v0.4.1. This means that it's a lot cleaner than the previous version, which was getting crufty after a year of API changes.
+
 ## API
 
 ### cookies = new Cookies( request, response, [ Object keygrip ] )
