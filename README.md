@@ -17,6 +17,8 @@ This is the next version of the now deprecated [cookie-node](https://github.com/
 
 * **Lazy**: Since cookie verification against multiple keys could be expensive, cookies are only verified lazily when accessed, not eagerly on each request.
 
+* **Secure**: All cookies are `httponly` by default, and cookies sent over SSL are `secure` by default. An error will be thrown if you try to send secure cookies over an insecure socket.
+
 * **Unobtrusive**: Signed cookies are stored the same way as unsigned cookies, instead of in an obfuscated signing format. An additional signature cookie is stored for each signed cookie, using a standard naming convention (_cookie-name_`.sig`). This allows other libraries to access the original cookies without having to know the signing mechanism.
 
 * **Agnostic**: This library is optimized for use with [Keygrip](https://github.com/jed/keygrip), but does not require it; you can implement your own signing scheme instead if you like and use this library only to read/write cookies. Factoring the signing into a separate library encourages code reuse and allows you to use the same signing library for other areas where signing is needed, such as in URLs.
@@ -54,29 +56,24 @@ If the _options_ object is provided, it will be used to generate the outbound co
 * `expires`: a `Date` object indicating the cookie's expiration date (expires at the end of session by default).
 * `path`: a string indicating the path of the cookie (`/` by default).
 * `domain`: a string indicating the domain of the cookie (no default).
-* `secure`: a boolean indicating whether the cookie is only to be sent over HTTPS (`false` by default).
-* `httpOnly`: a boolean indicating whether the cookie is only to be sent over HTTP(S), and not made available to client JavaScript (`false` by default).
+* `secure`: a boolean indicating whether the cookie is only to be sent over HTTPS (`false` by default for HTTP, `true` by default for HTTPS).
+* `httpOnly`: a boolean indicating whether the cookie is only to be sent over HTTP(S), and not made available to client JavaScript (`true` by default).
 * `signed`: a boolean indicating whether the cookie is to be signed (`false` by default). If this is true, another cookie of the same name with the `.sig` suffix appended will also be sent, with a 27-byte url-safe base64 SHA1 value representing the hash of _<cookie-name>_ + `=` + _<cookie-value>_ against the first [Keygrip](https://github.com/jed/keygrip) key. This signature key is used to detect tampering the next time a cookie is received.
 
 ## Example
 
     // from ./test.js
-    var assert = require( "assert" )
-      , http = require( "http" )
-      , keys = require( "keygrip" )()
-      , Cookies = require( "cookies" )
-    
-    http.createServer( function( req, res ) {
+    server = http.createServer( function( req, res ) {
       var cookies = new Cookies( req, res, keys )
-        , insecure, secure, tampered
+        , unsigned, signed, tampered
       
       if ( req.url == "/set" ) {
         cookies
           // set a regular cookie
-          .set( "insecure", "foo" )
+          .set( "unsigned", "foo", { httpOnly: false } )
     
           // set a signed cookie
-          .set( "secure", "bar", { signed: true } )
+          .set( "signed", "bar", { signed: true } )
     
           // mimic a signed cookie, but with a bogus signature
           .set( "tampered", "baz" )
@@ -86,25 +83,25 @@ If the _options_ object is provided, it will be used to generate the outbound co
         return res.end( "Now let's check." )
       }
       
-      insecure = cookies.get( "insecure" )
-      secure = cookies.get( "secure", { signed: true } )
+      unsigned = cookies.get( "unsigned" )
+      signed = cookies.get( "signed", { signed: true } )
       tampered = cookies.get( "tampered", { signed: true } )
       
-      assert.equal( insecure, "foo" )
-      assert.equal( secure, "bar" )
+      assert.equal( unsigned, "foo" )
+      assert.equal( signed, "bar" )
       assert.notEqual( tampered, "baz" )
       assert.equal( tampered, undefined )
     
       res.writeHead( 200, { "Content-Type": "text/plain" } )
       res.end(
-        "insecure expected: foo\n\n" +
-        "insecure actual: " + insecure + "\n\n" +
-        "secure expected: bar\n\n" +
-        "secure actual: " + secure + "\n\n" +
+        "unsigned expected: foo\n\n" +
+        "unsigned actual: " + unsigned + "\n\n" +
+        "signed expected: bar\n\n" +
+        "signed actual: " + signed + "\n\n" +
         "tampered expected: undefined\n\n"+
         "tampered: " + tampered + "\n\n"
       )
-    }).listen( 8000 )
+    })
 
 ## TODO
 
