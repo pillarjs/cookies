@@ -7,15 +7,15 @@ var assert = require( "assert" )
 
 server = http.createServer( function( req, res ) {
   var cookies = new Cookies( req, res, keys )
-    , insecure, secure, tampered
+    , unsigned, signed, tampered
   
   if ( req.url == "/set" ) {
     cookies
       // set a regular cookie
-      .set( "insecure", "foo" )
+      .set( "unsigned", "foo", { httpOnly: false } )
 
       // set a signed cookie
-      .set( "secure", "bar", { signed: true } )
+      .set( "signed", "bar", { signed: true } )
 
       // mimic a signed cookie, but with a bogus signature
       .set( "tampered", "baz" )
@@ -25,21 +25,21 @@ server = http.createServer( function( req, res ) {
     return res.end( "Now let's check." )
   }
   
-  insecure = cookies.get( "insecure" )
-  secure = cookies.get( "secure", { signed: true } )
+  unsigned = cookies.get( "unsigned" )
+  signed = cookies.get( "signed", { signed: true } )
   tampered = cookies.get( "tampered", { signed: true } )
   
-  assert.equal( insecure, "foo" )
-  assert.equal( secure, "bar" )
+  assert.equal( unsigned, "foo" )
+  assert.equal( signed, "bar" )
   assert.notEqual( tampered, "baz" )
   assert.equal( tampered, undefined )
 
   res.writeHead( 200, { "Content-Type": "text/plain" } )
   res.end(
-    "insecure expected: foo\n\n" +
-    "insecure actual: " + insecure + "\n\n" +
-    "secure expected: bar\n\n" +
-    "secure actual: " + secure + "\n\n" +
+    "unsigned expected: foo\n\n" +
+    "unsigned actual: " + unsigned + "\n\n" +
+    "signed expected: bar\n\n" +
+    "signed actual: " + signed + "\n\n" +
     "tampered expected: undefined\n\n"+
     "tampered: " + tampered + "\n\n"
   )
