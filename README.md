@@ -39,7 +39,7 @@ This extracts the cookie with the given name from the `Cookie` header in the req
 
 `{ signed: true }` can optionally be passed as the second parameter _options_. In this case, a signature cookie (a cookie of same name ending with the `.sig` suffix appended) is fetched. If no such cookie exists, nothing is returned.
 
-If the signature cookie _does_ exist, the provided [Keygrip](https://github.com/jed/keygrip) object is used to check whether the hash of _<cookie-name>_ + `=` + _<cookie-value>_ matches that of any registered key:
+If the signature cookie _does_ exist, the provided [Keygrip](https://github.com/jed/keygrip) object is used to check whether the hash of _cookie-name_=_cookie-value_ matches that of any registered key:
 
 * If the signature cookie hash matches the first key, the original cookie value is returned.
 * If the signature cookie hash matches any other key, the original cookie value is returned AND an outbound header is set to update the signature cookie's value to the hash of the first key. This enables automatic freshening of signature cookies that have become stale due to key rotation.
