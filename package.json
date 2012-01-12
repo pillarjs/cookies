@@ -1,17 +1,23 @@
 {
   "name": "cookies",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "description": "Cookies, optionally signed using Keygrip.",
-  "main": "./index",
-  "engines": [
-    "node"
-  ],
-  "directories": {
-    "lib": "./lib"
-  },
-  "files": [
-    ""
-  ],
+  "main": "./lib/cookies",
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+    "express": "*",
+    "keygrip": "*"
+  },
+  "engines": {
+    "node": "*"
+  },
+  "author": "Jed Schmidt <tr@nslator.jp> (http://jed.is)",
+  "homepage": "https://github.com/jed/cookies",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jed/cookies.git"
+  },
+  "scripts": {
+    "test": "node ./test/http.js"
+  }
 }

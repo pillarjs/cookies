@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var assert = require( "assert" )
   , http = require( "http" )
   , keys = require( "keygrip" )()
@@ -36,12 +38,12 @@ server = http.createServer( function( req, res ) {
 
   res.writeHead( 200, { "Content-Type": "text/plain" } )
   res.end(
-    "unsigned expected: foo\n\n" +
+    "unsigned expected: foo\n" +
     "unsigned actual: " + unsigned + "\n\n" +
-    "signed expected: bar\n\n" +
+    "signed expected: bar\n" +
     "signed actual: " + signed + "\n\n" +
-    "tampered expected: undefined\n\n"+
-    "tampered: " + tampered + "\n\n"
+    "tampered expected: undefined\n"+
+    "tampered: " + tampered + "\n"
   )
 })
 
@@ -51,8 +53,8 @@ http.get( options, function( res ) {
   var cookies = res.headers[ "set-cookie" ]
     , body = ""
   
-  console.log( "cookies set:", cookies )
-  console.log( "============" )
+  console.log( "\ncookies set:", cookies )
+  console.log( "\n============\n" )
 
   options.path = res.headers[ "location" ]
   options.headers = { "Cookie": cookies.join(";") }
