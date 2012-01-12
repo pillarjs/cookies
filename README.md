@@ -1,7 +1,7 @@
 Cookies
 =======
 
-Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S) cookies. Cookies can be signed to prevent tampering, using [Keygrip](https://github.com/jed/keygrip).
+Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S) cookies. Cookies can be signed to prevent tampering, using [Keygrip](https://github.com/jed/keygrip). It can be used with the built-in node.js HTTP library, or as Connect/Express middleware.
 
 ## Requirements
 
@@ -13,8 +13,6 @@ Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S
     
 ## Features
 
-This is the next version of the now deprecated [cookie-node](https://github.com/jed/cookie-node) library, with the following improvements:
-
 * **Lazy**: Since cookie verification against multiple keys could be expensive, cookies are only verified lazily when accessed, not eagerly on each request.
 
 * **Secure**: All cookies are `httponly` by default, and cookies sent over SSL are `secure` by default. An error will be thrown if you try to send secure cookies over an insecure socket.
@@ -23,8 +21,6 @@ This is the next version of the now deprecated [cookie-node](https://github.com/
 
 * **Agnostic**: This library is optimized for use with [Keygrip](https://github.com/jed/keygrip), but does not require it; you can implement your own signing scheme instead if you like and use this library only to read/write cookies. Factoring the signing into a separate library encourages code reuse and allows you to use the same signing library for other areas where signing is needed, such as in URLs.
 
-* **Up-to-date**: Whereas the last library was built starting with an v0.1.* version of node without crypto or buffers, this one was built starting with v0.4.1. This means that it's a lot cleaner than the previous version, which was getting crufty after a year of API changes.
-
 ## API
 
 ### cookies = new Cookies( request, response, [ Object keygrip ] )
@@ -32,6 +28,10 @@ This is the next version of the now deprecated [cookie-node](https://github.com/
 This creates a cookie jar corresponding to the current _request_ and _response_. A [Keygrip](https://github.com/jed/keygrip) object can optionally be passed as the third argument _keygrip_ to enable cryptographic signing based on SHA1 HMAC, using rotated credentials.
 
 Note that since this only saves parameters without any other processing, it is very lightweight. Cookies are only parsed on demand when they are accessed.
+
+### express.createServer( Cookies.express([ Object keygrip ] ) )
+
+This adds cookie support as a Connect middleware layer for use in Express apps, allowing inbound cookies to be read using `req.cookies.get` and outbound cookies to be set using `res.cookies.set`.
 
 ### cookies.get( name, [ options ] )
 
@@ -105,13 +105,9 @@ server = http.createServer( function( req, res ) {
 })
 ```
 
-## TODO
-
-* Look for existing outbound cookies to prevent duplicates
-
 Copyright
 ---------
 
-Copyright (c) 2011 Jed Schmidt. See LICENSE.txt for details.
+Copyright (c) 2012 Jed Schmidt. See LICENSE.txt for details.
 
 Send any questions or comments [here](http://twitter.com/jedschmidt).
