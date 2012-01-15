@@ -1,6 +1,8 @@
 Cookies
 =======
 
+[![Build Status](https://secure.travis-ci.org/jed/cookies.png)](http://travis-ci.org/jed/cookies)
+
 Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S) cookies. Cookies can be signed to prevent tampering, using [Keygrip](https://github.com/jed/keygrip). It can be used with the built-in node.js HTTP library, or as Connect/Express middleware.
 
 ## Requirements
