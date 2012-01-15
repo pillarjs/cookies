@@ -3,7 +3,7 @@
 var assert = require( "assert" )
   , http = require( "http" )
   , keys = require( "keygrip" )()
-  , Cookies = require( "cookies" )
+  , Cookies = require( "../" )
   , options = { host: "localhost", port: 8000, path: "/set" }
   , server
 
