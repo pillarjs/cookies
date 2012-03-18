@@ -1,6 +1,6 @@
 {
   "name": "cookies",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Cookies, optionally signed using Keygrip.",
   "main": "./lib/cookies",
   "dependencies": {},
@@ -19,5 +19,6 @@
   },
   "scripts": {
     "test": "node ./test/http.js && node ./test/express.js"
-  }
+  },
+  "optionalDependencies": {}
 }
