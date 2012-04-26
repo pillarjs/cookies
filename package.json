@@ -1,6 +1,6 @@
 {
   "name": "cookies",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Cookies, optionally signed using Keygrip.",
   "main": "./lib/cookies",
   "dependencies": {},
@@ -9,7 +9,7 @@
     "keygrip": "*"
   },
   "engines": {
-    "node": "*"
+    "node": ">= 0.6.0"
   },
   "author": "Jed Schmidt <tr@nslator.jp> (http://jed.is)",
   "homepage": "https://github.com/jed/cookies",
