@@ -46,7 +46,9 @@ app.get("/", function(req, res) {
   )
 })
 
-app.listen( 8000 )
+var server = require('http').createServer(app);
+
+server.listen( 8000 )
 
 http.get( options, function( res ) {
   var header = res.headers[ "set-cookie" ]
@@ -61,6 +63,6 @@ http.get( options, function( res ) {
   http.get( options, function( res ) {
     res.on( "data", function( chunk ){ body += chunk } )
     res.on( "end", function(){ console.log( body ) })
-    app.close()
+    server.close()
   })
 })
