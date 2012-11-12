@@ -55,6 +55,7 @@ http.get( options, function( res ) {
   
   console.log( "\ncookies set:", cookies )
   console.log( "\n============\n" )
+  assert.equal(cookies.length, 6)
 
   options.path = res.headers[ "location" ]
   options.headers = { "Cookie": cookies.join(";") }
