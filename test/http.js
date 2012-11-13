@@ -35,6 +35,7 @@ server = http.createServer( function( req, res ) {
   assert.equal( signed, "bar" )
   assert.notEqual( tampered, "baz" )
   assert.equal( tampered, undefined )
+  assert.equal(res.getHeader('Set-Cookie'), 'tampered.sig=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; httponly')
 
   res.writeHead( 200, { "Content-Type": "text/plain" } )
   res.end(
