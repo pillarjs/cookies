@@ -13,7 +13,7 @@ app.use( cookies( keys ) )
 app.get( "/set", function(req, res) {
   res.cookies
     // set a regular cookie
-    .set( "unsigned", "foo", { httpOnly: false } )
+    .set( "unsigned", "foo", { signed:false, httpOnly: false } )
 
     // set a signed cookie
     .set( "signed", "bar", { signed: true } )
@@ -32,6 +32,7 @@ app.get("/", function(req, res) {
     , tampered = req.cookies.get( "tampered", { signed: true } )
   
   assert.equal( unsigned, "foo" )
+  assert.equal( req.cookies.get( "unsigned.sig", { signed:false } ), undefined)
   assert.equal( signed, "bar" )
   assert.notEqual( tampered, "baz" )
   assert.equal( tampered, undefined )
@@ -57,7 +58,7 @@ http.get( options, function( res ) {
   
   console.log( "\ncookies set:", header )
   console.log( "\n============\n" )
-  assert.equal(header.length, 6)
+  assert.equal(header.length, 5)
 
   options.path = res.headers[ "Location" ]
   options.headers = { "Cookie": header.join(";") }

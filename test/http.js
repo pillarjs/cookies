@@ -14,7 +14,7 @@ server = http.createServer( function( req, res ) {
   if ( req.url == "/set" ) {
     cookies
       // set a regular cookie
-      .set( "unsigned", "foo", { httpOnly: false } )
+      .set( "unsigned", "foo", { signed:false, httpOnly: false } )
 
       // set a signed cookie
       .set( "signed", "bar", { signed: true } )
@@ -32,6 +32,7 @@ server = http.createServer( function( req, res ) {
   tampered = cookies.get( "tampered", { signed: true } )
   
   assert.equal( unsigned, "foo" )
+  assert.equal( cookies.get( "unsigned.sig", { signed:false } ), undefined)
   assert.equal( signed, "bar" )
   assert.notEqual( tampered, "baz" )
   assert.equal( tampered, undefined )
@@ -56,7 +57,7 @@ http.get( options, function( res ) {
   
   console.log( "\ncookies set:", cookies )
   console.log( "\n============\n" )
-  assert.equal(cookies.length, 6)
+  assert.equal(cookies.length, 5)
 
   options.path = res.headers[ "location" ]
   options.headers = { "Cookie": cookies.join(";") }
