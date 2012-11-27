@@ -6,6 +6,7 @@
   "dependencies": {},
   "devDependencies": {
     "express": "*",
+    "restify": "*",
     "keygrip": "*"
   },
   "engines": {
@@ -18,7 +19,7 @@
     "url": "git://github.com/jed/cookies.git"
   },
   "scripts": {
-    "test": "node ./test/http.js && node ./test/express.js"
+    "test": "node ./test/http.js && node ./test/express.js && node ./test/restify.js"
   },
   "optionalDependencies": {}
 }
