@@ -7,7 +7,7 @@ Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S
 
 ## Requirements
 
-* [node.js](http://nodejs.org/), tested with 0.4.1
+* [node.js](http://nodejs.org/), tested with 0.8 and 0.10
 
 ## Install
 
