@@ -67,7 +67,9 @@ If the _options_ object is provided, it will be used to generate the outbound co
 ## Example
 
 ```javascript
-// from ./test.js
+var http    = require( "http" )
+var Cookies = require( "cookies" )
+
 server = http.createServer( function( req, res ) {
   var cookies = new Cookies( req, res, keys )
     , unsigned, signed, tampered
