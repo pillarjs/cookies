@@ -3,7 +3,7 @@
 var assert = require( "assert" )
   , express = require( "express" )
   , http = require( "http" )
-  , keys = require( "keygrip" )()
+  , keys = require( "keygrip" )(['a', 'b'])
   , cookies = require( "../" ).express
   , options = { host: "localhost", port: 8000, path: "/set" }
   , app = express.createServer()
@@ -35,7 +35,7 @@ app.get("/", function(req, res) {
     , signed = req.cookies.get( "signed", { signed: true } )
     , tampered = req.cookies.get( "tampered", { signed: true } )
     , overwrite = req.cookies.get( "overwrite", { signed: true } )
-  
+
   assert.equal( unsigned, "foo" )
   assert.equal( req.cookies.get( "unsigned.sig", { signed:false } ), undefined)
   assert.equal( signed, "bar" )
@@ -64,7 +64,7 @@ server.listen( 8000 )
 http.get( options, function( res ) {
   var header = res.headers[ "set-cookie" ]
     , body = ""
-  
+
   console.log( "\ncookies set:", header )
   console.log( "\n============\n" )
   assert.equal(header.length, 7)

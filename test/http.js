@@ -2,7 +2,7 @@
 
 var assert = require( "assert" )
   , http = require( "http" )
-  , keys = require( "keygrip" )()
+  , keys = require( "keygrip" )(['a', 'b'])
   , Cookies = require( "../" )
   , options = { host: "localhost", port: 8000, path: "/set" }
   , server
@@ -10,7 +10,7 @@ var assert = require( "assert" )
 server = http.createServer( function( req, res ) {
   var cookies = new Cookies( req, res, keys )
     , unsigned, signed, tampered, overwrite
-  
+
   if ( req.url == "/set" ) {
     cookies
       // set a regular cookie
@@ -30,7 +30,7 @@ server = http.createServer( function( req, res ) {
     res.writeHead( 302, { "Location": "/" } )
     return res.end( "Now let's check." )
   }
-  
+
   unsigned = cookies.get( "unsigned" )
   signed = cookies.get( "signed", { signed: true } )
   tampered = cookies.get( "tampered", { signed: true } )

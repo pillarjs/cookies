@@ -3,11 +3,12 @@
   "version": "0.3.8",
   "description": "Cookies, optionally signed using Keygrip.",
   "main": "./lib/cookies",
-  "dependencies": {},
+  "dependencies": {
+    "keygrip": "~1.0.0"
+  },
   "devDependencies": {
     "express": "*",
-    "restify": "*",
-    "keygrip": "*"
+    "restify": "*"
   },
   "engines": {
     "node": ">= 0.6.0"
