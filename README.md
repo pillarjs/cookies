@@ -12,7 +12,7 @@ Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S
 ## Install
 
     $ npm install cookies
-    
+
 ## Features
 
 * **Lazy**: Since cookie verification against multiple keys could be expensive, cookies are only verified lazily when accessed, not eagerly on each request.
@@ -25,13 +25,13 @@ Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S
 
 ## API
 
-### cookies = new Cookies( request, response, [ Object keygrip ] )
+### cookies = new Cookies( request, response, keys )
 
-This creates a cookie jar corresponding to the current _request_ and _response_. A [Keygrip](https://github.com/jed/keygrip) object can optionally be passed as the third argument _keygrip_ to enable cryptographic signing based on SHA1 HMAC, using rotated credentials.
+This creates a cookie jar corresponding to the current _request_ and _response_. A [Keygrip](https://github.com/jed/keygrip) object or an array of keys can optionally be passed as the third argument _keygrip_ to enable cryptographic signing based on SHA1 HMAC, using rotated credentials.
 
 Note that since this only saves parameters without any other processing, it is very lightweight. Cookies are only parsed on demand when they are accessed.
 
-### express.createServer( Cookies.express([ Object keygrip ] ) )
+### express.createServer( Cookies.express( keys ) )
 
 This adds cookie support as a Connect middleware layer for use in Express apps, allowing inbound cookies to be read using `req.cookies.get` and outbound cookies to be set using `res.cookies.set`.
 
@@ -74,7 +74,7 @@ var Cookies = require( "cookies" )
 server = http.createServer( function( req, res ) {
   var cookies = new Cookies( req, res, keys )
     , unsigned, signed, tampered
-  
+
   if ( req.url == "/set" ) {
     cookies
       // set a regular cookie
@@ -90,11 +90,11 @@ server = http.createServer( function( req, res ) {
     res.writeHead( 302, { "Location": "/" } )
     return res.end( "Now let's check." )
   }
-  
+
   unsigned = cookies.get( "unsigned" )
   signed = cookies.get( "signed", { signed: true } )
   tampered = cookies.get( "tampered", { signed: true } )
-  
+
   assert.equal( unsigned, "foo" )
   assert.equal( signed, "bar" )
   assert.notEqual( tampered, "baz" )
