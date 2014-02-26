@@ -10,6 +10,12 @@
     "express": "*",
     "restify": "*"
   },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.github.com/jed/cookies/master/LICENSE.txt"
+    }
+  ],
   "engines": {
     "node": ">= 0.6.0"
   },
