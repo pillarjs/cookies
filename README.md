@@ -115,6 +115,6 @@ server = http.createServer( function( req, res ) {
 Copyright
 ---------
 
-Copyright (c) 2012 Jed Schmidt. See LICENSE.txt for details.
+Copyright (c) 2014 Jed Schmidt. See LICENSE.txt for details.
 
 Send any questions or comments [here](http://twitter.com/jedschmidt).
