@@ -1,9 +1,9 @@
 Cookies
 =======
 
-[![Build Status](https://secure.travis-ci.org/jed/cookies.png)](http://travis-ci.org/jed/cookies)
+[![Build Status](https://secure.travis-ci.org/expressjs/cookies.png)](http://travis-ci.org/expressjs/cookies)
 
-Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S) cookies. Cookies can be signed to prevent tampering, using [Keygrip](https://github.com/jed/keygrip). It can be used with the built-in node.js HTTP library, or as Connect/Express middleware.
+Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S) cookies. Cookies can be signed to prevent tampering, using [Keygrip](https://github.com/expressjs/keygrip). It can be used with the built-in node.js HTTP library, or as Connect/Express middleware.
 
 ## Requirements
 
@@ -21,13 +21,13 @@ Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S
 
 * **Unobtrusive**: Signed cookies are stored the same way as unsigned cookies, instead of in an obfuscated signing format. An additional signature cookie is stored for each signed cookie, using a standard naming convention (_cookie-name_`.sig`). This allows other libraries to access the original cookies without having to know the signing mechanism.
 
-* **Agnostic**: This library is optimized for use with [Keygrip](https://github.com/jed/keygrip), but does not require it; you can implement your own signing scheme instead if you like and use this library only to read/write cookies. Factoring the signing into a separate library encourages code reuse and allows you to use the same signing library for other areas where signing is needed, such as in URLs.
+* **Agnostic**: This library is optimized for use with [Keygrip](https://github.com/expressjs/keygrip), but does not require it; you can implement your own signing scheme instead if you like and use this library only to read/write cookies. Factoring the signing into a separate library encourages code reuse and allows you to use the same signing library for other areas where signing is needed, such as in URLs.
 
 ## API
 
 ### cookies = new Cookies( request, response, keys )
 
-This creates a cookie jar corresponding to the current _request_ and _response_. A [Keygrip](https://github.com/jed/keygrip) object or an array of keys can optionally be passed as the third argument _keygrip_ to enable cryptographic signing based on SHA1 HMAC, using rotated credentials.
+This creates a cookie jar corresponding to the current _request_ and _response_. A [Keygrip](https://github.com/expressjs/keygrip) object or an array of keys can optionally be passed as the third argument _keygrip_ to enable cryptographic signing based on SHA1 HMAC, using rotated credentials.
 
 Note that since this only saves parameters without any other processing, it is very lightweight. Cookies are only parsed on demand when they are accessed.
 
@@ -41,7 +41,7 @@ This extracts the cookie with the given name from the `Cookie` header in the req
 
 `{ signed: true }` can optionally be passed as the second parameter _options_. In this case, a signature cookie (a cookie of same name ending with the `.sig` suffix appended) is fetched. If no such cookie exists, nothing is returned.
 
-If the signature cookie _does_ exist, the provided [Keygrip](https://github.com/jed/keygrip) object is used to check whether the hash of _cookie-name_=_cookie-value_ matches that of any registered key:
+If the signature cookie _does_ exist, the provided [Keygrip](https://github.com/expressjs/keygrip) object is used to check whether the hash of _cookie-name_=_cookie-value_ matches that of any registered key:
 
 * If the signature cookie hash matches the first key, the original cookie value is returned.
 * If the signature cookie hash matches any other key, the original cookie value is returned AND an outbound header is set to update the signature cookie's value to the hash of the first key. This enables automatic freshening of signature cookies that have become stale due to key rotation.
@@ -62,7 +62,7 @@ If the _options_ object is provided, it will be used to generate the outbound co
 * `secure`: a boolean indicating whether the cookie is only to be sent over HTTPS (`false` by default for HTTP, `true` by default for HTTPS).
 * `secureProxy`: a boolean indicating whether the cookie is only to be sent over HTTPS (use this if you handle SSL not in your node process).
 * `httpOnly`: a boolean indicating whether the cookie is only to be sent over HTTP(S), and not made available to client JavaScript (`true` by default).
-* `signed`: a boolean indicating whether the cookie is to be signed (`false` by default). If this is true, another cookie of the same name with the `.sig` suffix appended will also be sent, with a 27-byte url-safe base64 SHA1 value representing the hash of _cookie-name_=_cookie-value_ against the first [Keygrip](https://github.com/jed/keygrip) key. This signature key is used to detect tampering the next time a cookie is received.
+* `signed`: a boolean indicating whether the cookie is to be signed (`false` by default). If this is true, another cookie of the same name with the `.sig` suffix appended will also be sent, with a 27-byte url-safe base64 SHA1 value representing the hash of _cookie-name_=_cookie-value_ against the first [Keygrip](https://github.com/expressjs/keygrip) key. This signature key is used to detect tampering the next time a cookie is received.
 * `overwrite`: a boolean indicating whether to overwrite previously set cookies of the same name (`false` by default). If this is true, all cookies set during the same request with the same name (regardless of path or domain) are filtered out of the Set-Cookie header when setting this cookie.
 
 ## Example
