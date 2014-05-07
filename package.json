@@ -13,17 +13,17 @@
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://raw.github.com/jed/cookies/master/LICENSE.txt"
+      "url": "https://raw.github.com/expressjs/cookies/master/LICENSE.txt"
     }
   ],
   "engines": {
     "node": ">= 0.6.0"
   },
   "author": "Jed Schmidt <tr@nslator.jp> (http://jed.is)",
-  "homepage": "https://github.com/jed/cookies",
+  "homepage": "https://github.com/expressjs/cookies",
   "repository": {
     "type": "git",
-    "url": "git://github.com/jed/cookies.git"
+    "url": "git://github.com/expressjs/cookies.git"
   },
   "scripts": {
     "test": "node ./test/http.js && node ./test/express.js && node ./test/restify.js"
