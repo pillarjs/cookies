@@ -6,7 +6,7 @@ var assert = require( "assert" )
   , keys = require( "keygrip" )(['a', 'b'])
   , cookies = require( "../" ).express
   , options = { host: "localhost", port: 8000, path: "/set" }
-  , app = express.createServer()
+  , app = express()
 
 app.use( cookies( keys ) )
 
