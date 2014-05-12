@@ -71,6 +71,8 @@ http.get( options, function( res ) {
   options.path = res.headers[ "location" ]
   options.headers = { "Cookie": cookies.join(";") }
 
+  res.resume()
+
   http.get( options, function( res ) {
     res.on( "data", function( chunk ){ body += chunk } )
     res.on( "end", function(){ console.log( body ) })

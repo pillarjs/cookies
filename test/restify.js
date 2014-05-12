@@ -21,8 +21,10 @@ server.listen(8000, function() {
     assert.equal(res.statusCode, 200)
     var header = res.headers['set-cookie']
     assertSetCookieHeader(header)
+    res.resume()
     http.get({ path: '/get', host: 'localhost', port: 8000, headers: { 'Cookie': header.join(';') } }, function(res) {
       assert.equal(res.statusCode, 200)
+      res.resume()
       server.close()
     })
   })
