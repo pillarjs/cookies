@@ -12,6 +12,9 @@
     "supertest": "0",
     "mocha": "1"
   },
+  "engines": {
+    "node": ">= 0.8.0"
+  },
   "license": "MIT",
   "author": "Jed Schmidt <tr@nslator.jp> (http://jed.is)",
   "repository": "expressjs/cookies",
