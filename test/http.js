@@ -1,81 +1,83 @@
-#!/usr/bin/env node
 
 var assert = require( "assert" )
   , http = require( "http" )
   , keys = require( "keygrip" )(['a', 'b'])
   , Cookies = require( "../" )
-  , options = { host: "localhost", port: 8000, path: "/set" }
-  , server
+  , request = require('supertest')
 
-server = http.createServer( function( req, res ) {
-  var cookies = new Cookies( req, res, keys )
-    , unsigned, signed, tampered, overwrite
+describe('HTTP', function () {
+  var server
+  var header
 
-  if ( req.url == "/set" ) {
-    cookies
-      // set a regular cookie
-      .set( "unsigned", "foo", { signed:false, httpOnly: false } )
+  before(function setup() {
+    server = http.createServer( function( req, res ) {
+      var cookies = new Cookies( req, res, keys )
+        , unsigned, signed, tampered, overwrite
 
-      // set a signed cookie
-      .set( "signed", "bar", { signed: true } )
+      if ( req.url == "/set" ) {
+        cookies
+          // set a regular cookie
+          .set( "unsigned", "foo", { signed:false, httpOnly: false } )
 
-      // mimic a signed cookie, but with a bogus signature
-      .set( "tampered", "baz" )
-      .set( "tampered.sig", "bogus" )
+          // set a signed cookie
+          .set( "signed", "bar", { signed: true } )
 
-      // set a cookie that will be overwritten
-      .set( "overwrite", "old-value", { signed: true } )
-      .set( "overwrite", "new-value", { overwrite: true, signed: true } )
+          // mimic a signed cookie, but with a bogus signature
+          .set( "tampered", "baz" )
+          .set( "tampered.sig", "bogus" )
 
-    res.writeHead( 302, { "Location": "/" } )
-    return res.end( "Now let's check." )
-  }
+          // set a cookie that will be overwritten
+          .set( "overwrite", "old-value", { signed: true } )
+          .set( "overwrite", "new-value", { overwrite: true, signed: true } )
 
-  unsigned = cookies.get( "unsigned" )
-  signed = cookies.get( "signed", { signed: true } )
-  tampered = cookies.get( "tampered", { signed: true } )
-  overwrite = cookies.get( "overwrite", { signed: true } )
+        res.writeHead( 302, { "Location": "/" } )
+        return res.end( "Now let's check." )
+      }
 
-  assert.equal( unsigned, "foo" )
-  assert.equal( cookies.get( "unsigned.sig", { signed:false } ), undefined)
-  assert.equal( signed, "bar" )
-  assert.equal( cookies.get( "signed.sig", { signed: false } ), keys.sign('signed=bar') )
-  assert.notEqual( tampered, "baz" )
-  assert.equal( tampered, undefined )
-  assert.equal( overwrite, "new-value" )
-  assert.equal( cookies.get( "overwrite.sig", { signed:false } ), keys.sign('overwrite=new-value') )
+      unsigned = cookies.get( "unsigned" )
+      signed = cookies.get( "signed", { signed: true } )
+      tampered = cookies.get( "tampered", { signed: true } )
+      overwrite = cookies.get( "overwrite", { signed: true } )
 
-  assert.equal(res.getHeader('Set-Cookie'), 'tampered.sig=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; httponly')
+      assert.equal( unsigned, "foo" )
+      assert.equal( cookies.get( "unsigned.sig", { signed:false } ), undefined)
+      assert.equal( signed, "bar" )
+      assert.equal( cookies.get( "signed.sig", { signed: false } ), keys.sign('signed=bar') )
+      assert.notEqual( tampered, "baz" )
+      assert.equal( tampered, undefined )
+      assert.equal( overwrite, "new-value" )
+      assert.equal( cookies.get( "overwrite.sig", { signed:false } ), keys.sign('overwrite=new-value') )
 
-  res.writeHead( 200, { "Content-Type": "text/plain" } )
-  res.end(
-    "unsigned expected: foo\n" +
-    "unsigned actual: " + unsigned + "\n\n" +
-    "signed expected: bar\n" +
-    "signed actual: " + signed + "\n\n" +
-    "tampered expected: undefined\n"+
-    "tampered: " + tampered + "\n"
-  )
-})
+      assert.equal(res.getHeader('Set-Cookie'), 'tampered.sig=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; httponly')
 
-server.listen( 8000 )
+      res.writeHead( 200, { "Content-Type": "text/plain" } )
+      res.end(
+        "unsigned expected: foo\n" +
+        "unsigned actual: " + unsigned + "\n\n" +
+        "signed expected: bar\n" +
+        "signed actual: " + signed + "\n\n" +
+        "tampered expected: undefined\n"+
+        "tampered: " + tampered + "\n"
+      )
+    }).listen()
+  })
 
-http.get( options, function( res ) {
-  var cookies = res.headers[ "set-cookie" ]
-    , body = ""
+  it('should set cookies', function (done) {
+    request(server)
+    .get('/set')
+    .expect(302, function (err, res) {
+      if (err) return done(err)
 
-  console.log( "\ncookies set:", cookies )
-  console.log( "\n============\n" )
-  assert.equal(cookies.length, 7)
+      header = res.headers['set-cookie']
+      assert.equal(header.length, 7)
+      done()
+    })
+  })
 
-  options.path = res.headers[ "location" ]
-  options.headers = { "Cookie": cookies.join(";") }
-
-  res.resume()
-
-  http.get( options, function( res ) {
-    res.on( "data", function( chunk ){ body += chunk } )
-    res.on( "end", function(){ console.log( body ) })
-    server.close()
+  it('should get cookies', function (done) {
+    request(server)
+    .get('/')
+    .set('Cookie', header.join(';'))
+    .expect(200, done)
   })
 })

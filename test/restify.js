@@ -2,31 +2,46 @@ var assert = require('assert'),
     restify = require('restify'),
     keys = require('keygrip')(['a', 'b']),
     http = require('http'),
-    Cookies = require('../')
+    Cookies = require('../'),
+    request = require('supertest')
 
-var server = restify.createServer()
+describe('Restify', function () {
+  var header
+  var server
 
-server.get('/set', function (req, res) {
-  setCookies(req, res)
-  res.json({ status : 'ok'})
-})
+  before(function setup(done) {
+    server = restify.createServer()
 
-server.get('/get', function (req, res) {
-  assertCookies(req, res)
-  res.send(200)
-})
-
-server.listen(8000, function() {
-  http.get({ path: '/set', host: 'localhost', port: 8000 }, function(res) {
-    assert.equal(res.statusCode, 200)
-    var header = res.headers['set-cookie']
-    assertSetCookieHeader(header)
-    res.resume()
-    http.get({ path: '/get', host: 'localhost', port: 8000, headers: { 'Cookie': header.join(';') } }, function(res) {
-      assert.equal(res.statusCode, 200)
-      res.resume()
-      server.close()
+    server.get('/set', function (req, res) {
+      setCookies(req, res)
+      res.json({ status : 'ok'})
     })
+
+    server.get('/get', function (req, res) {
+      assertCookies(req, res)
+      res.send(200)
+    })
+
+    server.listen(done)
+  })
+
+  it('should set cookies', function (done) {
+    request(server)
+    .get('/set')
+    .expect(200, function (err, res) {
+      if (err) return done(err)
+
+      header = res.headers['set-cookie']
+      assertSetCookieHeader(header)
+      done()
+    })
+  })
+
+  it('should get cookies', function (done) {
+    request(server)
+    .get('/get')
+    .set('Cookie', header.join(';'))
+    .expect(200, done)
   })
 })
 
