@@ -8,12 +8,14 @@
   },
   "devDependencies": {
     "express": "*",
-    "restify": "*"
+    "restify": "*",
+    "supertest": "0",
+    "mocha": "1"
   },
   "license": "MIT",
   "author": "Jed Schmidt <tr@nslator.jp> (http://jed.is)",
   "repository": "expressjs/cookies",
   "scripts": {
-    "test": "node ./test/http.js && node ./test/express.js && node ./test/restify.js"
+    "test": "mocha --reporter spec"
   }
 }
