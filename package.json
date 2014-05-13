@@ -10,23 +10,10 @@
     "express": "*",
     "restify": "*"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://raw.github.com/expressjs/cookies/master/LICENSE.txt"
-    }
-  ],
-  "engines": {
-    "node": ">= 0.6.0"
-  },
+  "license": "MIT",
   "author": "Jed Schmidt <tr@nslator.jp> (http://jed.is)",
-  "homepage": "https://github.com/expressjs/cookies",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/expressjs/cookies.git"
-  },
+  "repository": "expressjs/cookies",
   "scripts": {
     "test": "node ./test/http.js && node ./test/express.js && node ./test/restify.js"
-  },
-  "optionalDependencies": {}
+  }
 }
