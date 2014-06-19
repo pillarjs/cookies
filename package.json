@@ -4,11 +4,10 @@
   "description": "Cookies, optionally signed using Keygrip.",
   "main": "./lib/cookies",
   "dependencies": {
-    "keygrip": "~1.0.0"
+    "keygrip": "~2.0.0",
+    "base64-url": "~1.0.0"
   },
   "devDependencies": {
-    "express": "*",
-    "restify": "*",
     "supertest": "0",
     "mocha": "1"
   },
@@ -19,6 +18,6 @@
   "author": "Jed Schmidt <tr@nslator.jp> (http://jed.is)",
   "repository": "expressjs/cookies",
   "scripts": {
-    "test": "mocha --reporter spec"
+    "test": "mocha --reporter spec test/index.js"
   }
 }
