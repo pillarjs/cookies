@@ -4,7 +4,7 @@
   "description": "Cookies, optionally signed using Keygrip.",
   "main": "./lib/cookies",
   "dependencies": {
-    "keygrip": "~2.0.0",
+    "keygrip": "expressjs/keygrip",
     "base64-url": "~1.0.0"
   },
   "devDependencies": {
