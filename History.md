@@ -1,5 +1,5 @@
-unreleased
-==========
+0.5.0 / 2014-07-27
+==================
 
   * Integrate with `req.protocol` for secure cookies
   * Support `maxAge` as well as `maxage`
