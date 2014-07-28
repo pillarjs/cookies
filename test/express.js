@@ -83,4 +83,59 @@ describe('Express', function () {
     .set('Cookie', header.join(';'))
     .expect(200, done)
   })
+
+  describe('when "secure: true"', function () {
+    it('should not set when not secure', function (done) {
+      var app = express()
+
+      app.set('env', 'test')
+      app.use(cookies(keys))
+      app.use(function (req, res) {
+        res.cookies.set('foo', 'bar', {secure: true})
+        res.end()
+      })
+
+      request(app)
+      .get('/')
+      .expect(500, /Cannot send secure cookie over unencrypted connection/, done)
+    })
+
+    it('should set for secure connection', function (done) {
+      var app = express()
+
+      app.set('env', 'test')
+      app.use(cookies(keys))
+      app.use(function (req, res, next) {
+        res.connection.encrypted = true
+        next()
+      })
+      app.use(function (req, res) {
+        res.cookies.set('foo', 'bar', {secure: true})
+        res.end()
+      })
+
+      request(app)
+      .get('/')
+      .expect('Set-Cookie', /foo=bar.*secure/i)
+      .expect(200, done)
+    })
+
+    it('should set for proxy settings', function (done) {
+      var app = express()
+
+      app.set('env', 'test')
+      app.set('trust proxy', true)
+      app.use(cookies(keys))
+      app.use(function (req, res) {
+        res.cookies.set('foo', 'bar', {secure: true})
+        res.end()
+      })
+
+      request(app)
+      .get('/')
+      .set('X-Forwarded-Proto', 'https')
+      .expect('Set-Cookie', /foo=bar.*secure/i)
+      .expect(200, done)
+    })
+  })
 })
