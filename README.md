@@ -26,7 +26,7 @@ Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S
 
 ## API
 
-### cookies = new Cookies( request, response, keys )
+### cookies = new Cookies( request, response, [ keys ] )
 
 This creates a cookie jar corresponding to the current _request_ and _response_. A [Keygrip](https://www.npmjs.com/package/keygrip) object or an array of keys can optionally be passed as the third argument _keygrip_ to enable cryptographic signing based on SHA1 HMAC, using rotated credentials.
 
