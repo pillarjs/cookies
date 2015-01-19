@@ -17,7 +17,7 @@
   },
   "license": "MIT",
   "author": "Jed Schmidt <tr@nslator.jp> (http://jed.is)",
-  "repository": "expressjs/cookies",
+  "repository": "pillarjs/cookies",
   "scripts": {
     "test": "mocha --reporter spec"
   }
