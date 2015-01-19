@@ -2,7 +2,7 @@ Cookies
 =======
 
 [![NPM Version](https://badge.fury.io/js/cookies.svg)](https://badge.fury.io/js/cookies)
-[![Build Status](https://travis-ci.org/expressjs/cookies.svg?branch=master)](https://travis-ci.org/expressjs/cookies)
+[![Build Status](https://travis-ci.org/pillarjs/cookies.svg?branch=master)](https://travis-ci.org/expressjs/cookies)
 
 Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S) cookies. Cookies can be signed to prevent tampering, using [Keygrip](https://github.com/expressjs/keygrip). It can be used with the built-in node.js HTTP library, or as Connect/Express middleware.
 
@@ -26,7 +26,7 @@ Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S
 
 ## API
 
-### cookies = new Cookies( request, response, keys )
+### cookies = new Cookies( request, response, [ keys ] )
 
 This creates a cookie jar corresponding to the current _request_ and _response_. A [Keygrip](https://github.com/expressjs/keygrip) object or an array of keys can optionally be passed as the third argument _keygrip_ to enable cryptographic signing based on SHA1 HMAC, using rotated credentials.
 
