@@ -7,10 +7,10 @@
     "keygrip": "~1.0.0"
   },
   "devDependencies": {
-    "express": "*",
-    "restify": "*",
-    "supertest": "0",
-    "mocha": "1"
+    "express": "4.7.4",
+    "mocha": "1.21.5",
+    "restify": "2.8.1",
+    "supertest": "0.15.0"
   },
   "engines": {
     "node": ">= 0.8.0"
