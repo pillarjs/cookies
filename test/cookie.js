@@ -3,6 +3,11 @@ var assert = require('assert')
 var cookies = require('..')
 
 describe('new Cookie', function () {
+  it('should have correct constructor', function () {
+    var cookie = new cookies.Cookie('foo', 'bar')
+    assert.equal(cookie.constructor, cookies.Cookie)
+  })
+
   it('should throw on invalid name', function () {
     assert.throws(function () {
       new cookies.Cookie('foo\n', 'bar')

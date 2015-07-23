@@ -1,3 +1,8 @@
+0.6.x
+=====
+
+  * Change prototype construction for proper "constructor" property
+
 0.5.1 / 2014-07-27
 ==================
 

@@ -14,6 +14,8 @@ describe('HTTP', function () {
       var cookies = new Cookies( req, res, keys )
         , unsigned, signed, tampered, overwrite
 
+      assert.equal( cookies.constructor, Cookies )
+
       if ( req.url == "/set" ) {
         cookies
           // set a regular cookie
