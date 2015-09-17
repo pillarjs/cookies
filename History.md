@@ -1,7 +1,8 @@
-unreleased
-==========
+0.5.1 / 2014-07-27
+==================
 
   * Throw on invalid values provided to `Cookie` constructor
+    - This is not strict validation, but basic RFC 7230 validation
 
 0.5.0 / 2014-07-27
 ==================
