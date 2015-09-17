@@ -20,6 +20,9 @@ describe('Express', function () {
         // set a regular cookie
         .set( "unsigned", "foo", { signed:false, httpOnly: false } )
 
+        // set an empty cookie
+        .set( "empty", "", { signed: false, httpOnly: false } )
+
         // set a signed cookie
         .set( "signed", "bar", { signed: true } )
 
@@ -72,7 +75,7 @@ describe('Express', function () {
       if (err) return done(err)
 
       header = res.headers['set-cookie']
-      assert.equal(header.length, 7)
+      assert.equal(header.length, 8)
       done()
     })
   })

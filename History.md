@@ -1,3 +1,8 @@
+unreleased
+==========
+
+  * Throw on invalid values provided to `Cookie` constructor
+
 0.5.0 / 2014-07-27
 ==================
 
