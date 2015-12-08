@@ -40,7 +40,10 @@ This adds cookie support as a Connect middleware layer for use in Express apps, 
 
 This extracts the cookie with the given name from the `Cookie` header in the request. If such a cookie exists, its value is returned. Otherwise, nothing is returned.
 
-`{ signed: true }` can optionally be passed as the second parameter _options_. In this case, a signature cookie (a cookie of same name ending with the `.sig` suffix appended) is fetched. If no such cookie exists, nothing is returned.
+If the _options_ object is provided, the following options can be passed:
+
+* `signed`: If true, a signature cookie (a cookie of same name ending with the `.sig` suffix appended) is fetched. If no such cookie exists, nothing is returned. false unless keys were passed to the constructor.
+* `autoSet`: If true, the act of getting a cookie from the request will ensure that the cookie is set on the outgoing response.  If false, the outgoing response will not have the cookie set unless it is actively set.  Defaults to true.
 
 If the signature cookie _does_ exist, the provided [Keygrip](https://www.npmjs.com/package/keygrip) object is used to check whether the hash of _cookie-name_=_cookie-value_ matches that of any registered key:
 
