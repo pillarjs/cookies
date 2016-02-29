@@ -2,6 +2,7 @@ Cookies
 =======
 
 [![NPM Version][npm-image]][npm-url]
+[![NPM Downloads][downloads-image]][downloads-url]
 [![Node.js Version][node-version-image]][node-version-url]
 [![Build Status][travis-image]][travis-url]
 
@@ -127,6 +128,8 @@ Send any questions or comments [here](http://twitter.com/jedschmidt).
 
 [npm-image]: https://img.shields.io/npm/v/cookies.svg
 [npm-url]: https://npmjs.org/package/cookies
+[downloads-image]: https://img.shields.io/npm/dm/cookies.svg
+[downloads-url]: https://npmjs.org/package/cookies
 [node-version-image]: https://img.shields.io/node/v/cookies.svg
 [node-version-url]: https://nodejs.org/en/download/
 [travis-image]: https://img.shields.io/travis/pillarjs/cookies/master.svg
