@@ -18,6 +18,12 @@
   "license": "MIT",
   "author": "Jed Schmidt <tr@nslator.jp> (http://jed.is)",
   "repository": "pillarjs/cookies",
+  "files": [
+    "lib/",
+    "History.md",
+    "LICENSE.txt",
+    "README.md"
+  ],
   "scripts": {
     "test": "mocha --reporter spec"
   }
