@@ -4,6 +4,7 @@
   "description": "Cookies, optionally signed using Keygrip.",
   "main": "./lib/cookies",
   "dependencies": {
+    "depd": "~1.1.0",
     "keygrip": "~1.0.0"
   },
   "devDependencies": {
@@ -25,6 +26,6 @@
     "README.md"
   ],
   "scripts": {
-    "test": "mocha --reporter spec"
+    "test": "mocha --require test/support/env --reporter spec"
   }
 }
