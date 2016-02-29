@@ -2,6 +2,7 @@ Cookies
 =======
 
 [![NPM Version][npm-image]][npm-url]
+[![Node.js Version][node-version-image]][node-version-url]
 [![Build Status][travis-image]][travis-url]
 
 Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S) cookies. Cookies can be signed to prevent tampering, using [Keygrip](https://www.npmjs.com/package/keygrip). It can be used with the built-in node.js HTTP library, or as Connect/Express middleware.
@@ -126,5 +127,7 @@ Send any questions or comments [here](http://twitter.com/jedschmidt).
 
 [npm-image]: https://img.shields.io/npm/v/cookies.svg
 [npm-url]: https://npmjs.org/package/cookies
+[node-version-image]: https://img.shields.io/node/v/cookies.svg
+[node-version-url]: https://nodejs.org/en/download/
 [travis-image]: https://img.shields.io/travis/pillarjs/cookies/master.svg
 [travis-url]: https://travis-ci.org/pillarjs/cookies

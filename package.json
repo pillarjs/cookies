@@ -13,9 +13,6 @@
     "restify": "2.8.1",
     "supertest": "1.1.0"
   },
-  "engines": {
-    "node": ">= 0.8.0"
-  },
   "license": "MIT",
   "author": "Jed Schmidt <tr@nslator.jp> (http://jed.is)",
   "repository": "pillarjs/cookies",
@@ -25,6 +22,9 @@
     "LICENSE.txt",
     "README.md"
   ],
+  "engines": {
+    "node": ">= 0.8"
+  },
   "scripts": {
     "test": "mocha --require test/support/env --reporter spec"
   }
