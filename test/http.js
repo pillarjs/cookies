@@ -82,4 +82,46 @@ describe('HTTP', function () {
     .set('Cookie', header.join(';'))
     .expect(200, done)
   })
+
+  describe('with "secure" option', function () {
+    it('should check connection when undefined; unencrypted', function (done) {
+      request(createServer( "http", { "keys": keys } ))
+      .get('/')
+      .expect(500, 'Cannot send secure cookie over unencrypted connection', done)
+    })
+
+    it('should check connection when undefined; encrypted', function (done) {
+      request(createServer( "https", { "keys": keys } ))
+      .get('/')
+      .expect(200, done)
+    })
+
+    it('should not check connection when defined; true', function (done) {
+      request(createServer( "http", { "keys": keys, "secure": true } ))
+      .get('/')
+      .expect(200, done)
+    })
+
+    it('should not check connection when defined; false', function (done) {
+      request(createServer( "https", { "keys": keys, "secure": false } ))
+      .get('/')
+      .expect(500, 'Cannot send secure cookie over unencrypted connection', done)
+    })
+  })
 })
+
+function createServer(proto, opts) {
+  return http.createServer(function (req, res) {
+    var cookies = new Cookies( req, res, opts )
+    req.protocol = proto
+
+    try {
+      cookies.set( "foo", "bar", { "secure": true } )
+    } catch (e) {
+      res.statusCode = 500
+      res.write(e.message)
+    }
+
+    res.end()
+  })
+}
