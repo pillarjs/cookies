@@ -5,6 +5,8 @@
   * Change constructor to signature `new Cookies(req, res, [options])`
     - Replace `new Cookies(req, res, key)` with `new Cookies(req, res, {'keys': keys})`
   * Change prototype construction for proper "constructor" property
+  * Deprecate `secureProxy` option in `.set`; use `secure` option instead
+    - If `secure: true` throws even over SSL, use the `secure` constructor option
 
 0.5.1 / 2014-07-27
 ==================
