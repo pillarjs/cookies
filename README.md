@@ -1,8 +1,8 @@
 Cookies
 =======
 
-[![NPM Version](https://badge.fury.io/js/cookies.svg)](https://badge.fury.io/js/cookies)
-[![Build Status](https://travis-ci.org/pillarjs/cookies.svg?branch=master)](https://travis-ci.org/pillarjs/cookies)
+[![NPM Version][npm-image]][npm-url]
+[![Build Status][travis-image]][travis-url]
 
 Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S) cookies. Cookies can be signed to prevent tampering, using [Keygrip](https://www.npmjs.com/package/keygrip). It can be used with the built-in node.js HTTP library, or as Connect/Express middleware.
 
@@ -123,3 +123,8 @@ Copyright
 Copyright (c) 2014 Jed Schmidt. See LICENSE.txt for details.
 
 Send any questions or comments [here](http://twitter.com/jedschmidt).
+
+[npm-image]: https://img.shields.io/npm/v/cookies.svg
+[npm-url]: https://npmjs.org/package/cookies
+[travis-image]: https://img.shields.io/travis/pillarjs/cookies/master.svg
+[travis-url]: https://travis-ci.org/pillarjs/cookies
