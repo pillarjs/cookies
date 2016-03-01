@@ -1,6 +1,6 @@
 {
   "name": "cookies",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Cookies, optionally signed using Keygrip.",
   "main": "./lib/cookies",
   "dependencies": {
