@@ -1,5 +1,5 @@
-unreleased
-==========
+0.6.1 / 2016-02-29
+==================
 
   * Fix regression in 0.6.0 for array of strings in `keys` option
 
