@@ -108,6 +108,14 @@ describe('HTTP', function () {
       .expect(500, 'Cannot send secure cookie over unencrypted connection', done)
     })
   })
+
+  describe('with array "keys" options', function () {
+    it('should create keygrip with options.keys', function (done) {
+      request(createServer( "http", { "keys": ['a', 'b'], "secure": true } ))
+      .get('/')
+      .expect(200, done)
+    })
+  })
 })
 
 function createServer(proto, opts) {
@@ -116,7 +124,7 @@ function createServer(proto, opts) {
     req.protocol = proto
 
     try {
-      cookies.set( "foo", "bar", { "secure": true } )
+      cookies.set( "foo", "bar", { "secure": true, signed: true } )
     } catch (e) {
       res.statusCode = 500
       res.write(e.message)
