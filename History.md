@@ -1,5 +1,5 @@
-0.6.x
-=====
+0.6.0 / 2016-02-29
+==================
 
   * Add `secure` constructor option for secure connection checking
   * Change constructor to signature `new Cookies(req, res, [options])`
