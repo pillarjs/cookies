@@ -5,6 +5,10 @@ var assert = require( "assert" )
   , Cookies = require( "../" )
   , request = require('supertest')
 
+function startsWith(str, searchString) {
+  return str.substr(0, searchString.length) === searchString;
+}
+
 describe('HTTP', function () {
   var server
   var header
@@ -32,6 +36,12 @@ describe('HTTP', function () {
           .set( "overwrite", "old-value", { signed: true } )
           .set( "overwrite", "new-value", { overwrite: true, signed: true } )
 
+          // set a cookie as samesite
+          .set( "samesite", "qux", { sameSite: true, signed: false })
+          .set( "samesite-lax", "quux", { sameSite: 'Lax', signed: false })
+          .set( "samesite-strict", "corge", { sameSite: 'Strict', signed: false })
+          .set( "samesite-lax-case", "grault", { sameSite: 'laX', signed: false })
+
         res.writeHead( 302, { "Location": "/" } )
         return res.end( "Now let's check." )
       }
@@ -40,6 +50,9 @@ describe('HTTP', function () {
       signed = cookies.get( "signed", { signed: true } )
       tampered = cookies.get( "tampered", { signed: true } )
       overwrite = cookies.get( "overwrite", { signed: true } )
+      samesite = cookies.get( "samesite" )
+      samesiteLax = cookies.get( "samesite-lax" )
+      samesiteStrict = cookies.get( "samesite-strict" )
 
       assert.equal( unsigned, "foo" )
       assert.equal( cookies.get( "unsigned.sig", { signed:false } ), undefined)
@@ -49,6 +62,9 @@ describe('HTTP', function () {
       assert.equal( tampered, undefined )
       assert.equal( overwrite, "new-value" )
       assert.equal( cookies.get( "overwrite.sig", { signed:false } ), keys.sign('overwrite=new-value') )
+      assert.equal( samesite, "qux" )
+      assert.equal( samesiteLax, "quux" )
+      assert.equal( samesiteStrict, "corge" )
 
       assert.equal(res.getHeader('Set-Cookie'), 'tampered.sig=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; httponly')
 
@@ -59,7 +75,13 @@ describe('HTTP', function () {
         "signed expected: bar\n" +
         "signed actual: " + signed + "\n\n" +
         "tampered expected: undefined\n"+
-        "tampered: " + tampered + "\n"
+        "tampered: " + tampered + "\n\n" +
+        "samesite expected: qux\n" +
+        "samesite actual: " + samesite + "\n\n" +
+        "samesiteLax expected: quux\n" +
+        "samesiteLax actual: " + samesiteLax + "\n\n" +
+        "samesiteStrict expected: corge\n" +
+        "samesiteStrict actual: " + samesiteStrict + "\n"
       )
     }).listen()
   })
@@ -71,9 +93,29 @@ describe('HTTP', function () {
       if (err) return done(err)
 
       header = res.headers['set-cookie']
-      assert.equal(header.length, 7)
+      assert.equal(header.length, 11)
       done()
     })
+  })
+
+  it('should set samesite flag', function () {
+    var samesite, samesiteLax, samesiteStrict, samesiteLaxCase;
+    header.forEach(function(content) {
+      if (startsWith(content, 'samesite=')) {
+        samesite = content;
+      } else if (startsWith(content, 'samesite-lax=')) {
+        samesiteLax = content;
+      } else if (startsWith(content, 'samesite-strict=')) {
+        samesiteStrict = content;
+      } else if (startsWith(content, 'samesite-lax-case=')) {
+        samesiteLaxCase = content;
+      }
+    })
+
+    assert.equal(samesite, 'samesite=qux; path=/; httponly; SameSite')
+    assert.equal(samesiteLax, 'samesite-lax=quux; path=/; httponly; SameSite=Lax')
+    assert.equal(samesiteStrict, 'samesite-strict=corge; path=/; httponly; SameSite=Strict')
+    assert.equal(samesiteLaxCase, 'samesite-lax-case=grault; path=/; httponly; SameSite=Lax')
   })
 
   it('should get cookies', function (done) {
