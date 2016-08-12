@@ -1,3 +1,8 @@
+unreleased
+==========
+
+  * Fix `keys` deprecation message
+
 0.6.1 / 2016-02-29
 ==================
 
