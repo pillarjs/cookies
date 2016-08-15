@@ -2,7 +2,7 @@
 var assert = require('assert')
 var cookies = require('..')
 
-describe('new Cookie', function () {
+describe('new Cookie(name, value, [options])', function () {
   it('should have correct constructor', function () {
     var cookie = new cookies.Cookie('foo', 'bar')
     assert.equal(cookie.constructor, cookies.Cookie)
@@ -30,5 +30,31 @@ describe('new Cookie', function () {
     assert.throws(function () {
       new cookies.Cookie('foo', 'bar', { domain: 'example.com\n' })
     }, /option domain is invalid/)
+  })
+
+  describe('options', function () {
+    describe('maxage', function () {
+      it('should set the .maxAge property', function () {
+        var cookie = new cookies.Cookie('foo', 'bar', { maxage: 86400 })
+        assert.equal(cookie.maxAge, 86400)
+      })
+
+      it('should set the .maxage property', function () {
+        var cookie = new cookies.Cookie('foo', 'bar', { maxage: 86400 })
+        assert.equal(cookie.maxage, 86400)
+      })
+    })
+
+    describe('maxage', function () {
+      it('should set the .maxAge property', function () {
+        var cookie = new cookies.Cookie('foo', 'bar', { maxAge: 86400 })
+        assert.equal(cookie.maxAge, 86400)
+      })
+
+      it('should set the .maxage property', function () {
+        var cookie = new cookies.Cookie('foo', 'bar', { maxAge: 86400 })
+        assert.equal(cookie.maxage, 86400)
+      })
+    })
   })
 })
