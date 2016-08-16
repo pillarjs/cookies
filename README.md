@@ -9,10 +9,6 @@ Cookies
 
 Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S) cookies. Cookies can be signed to prevent tampering, using [Keygrip](https://www.npmjs.com/package/keygrip). It can be used with the built-in node.js HTTP library, or as Connect/Express middleware.
 
-## Requirements
-
-* [node.js](http://nodejs.org/), tested with 0.8 and 0.10
-
 ## Install
 
     $ npm install cookies
