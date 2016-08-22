@@ -11,7 +11,13 @@ Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S
 
 ## Install
 
-    $ npm install cookies
+This is a [Node.js](https://nodejs.org/en/) module available through the
+[npm registry](https://www.npmjs.com/). Installation is done using the
+[`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
+
+```
+$ npm install cookies
+```
 
 ## Features
 
