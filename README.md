@@ -126,8 +126,6 @@ Copyright
 
 Copyright (c) 2014 Jed Schmidt. See LICENSE.txt for details.
 
-Send any questions or comments [here](http://twitter.com/jedschmidt).
-
 [npm-image]: https://img.shields.io/npm/v/cookies.svg
 [npm-url]: https://npmjs.org/package/cookies
 [coveralls-image]: https://img.shields.io/coveralls/pillarjs/cookies/master.svg
