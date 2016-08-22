@@ -3,6 +3,9 @@
   "description": "Cookies, optionally signed using Keygrip.",
   "version": "0.6.1",
   "author": "Jed Schmidt <tr@nslator.jp> (http://jed.is)",
+  "contributors": [
+    "Douglas Christopher Wilson <doug@somethingdoug.com>"
+  ],
   "license": "MIT",
   "repository": "pillarjs/cookies",
   "main": "./lib/cookies",
