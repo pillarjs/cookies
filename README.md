@@ -121,10 +121,9 @@ server = http.createServer( function( req, res ) {
 })
 ```
 
-Copyright
----------
+## License
 
-Copyright (c) 2014 Jed Schmidt. See LICENSE.txt for details.
+[MIT](LICENSE)
 
 [npm-image]: https://img.shields.io/npm/v/cookies.svg
 [npm-url]: https://npmjs.org/package/cookies
