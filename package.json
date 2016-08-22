@@ -1,7 +1,10 @@
 {
   "name": "cookies",
-  "version": "0.6.1",
   "description": "Cookies, optionally signed using Keygrip.",
+  "version": "0.6.1",
+  "author": "Jed Schmidt <tr@nslator.jp> (http://jed.is)",
+  "license": "MIT",
+  "repository": "pillarjs/cookies",
   "main": "./lib/cookies",
   "dependencies": {
     "depd": "~1.1.0",
@@ -14,9 +17,6 @@
     "restify": "2.8.1",
     "supertest": "1.1.0"
   },
-  "license": "MIT",
-  "author": "Jed Schmidt <tr@nslator.jp> (http://jed.is)",
-  "repository": "pillarjs/cookies",
   "files": [
     "lib/",
     "History.md",
