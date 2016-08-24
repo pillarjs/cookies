@@ -14,7 +14,7 @@
     "keygrip": "~1.0.1"
   },
   "devDependencies": {
-    "express": "4.7.4",
+    "express": "4.9.8",
     "istanbul": "0.4.4",
     "mocha": "1.21.5",
     "restify": "2.8.1",
