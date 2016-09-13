@@ -69,10 +69,30 @@ If the _options_ object is provided, it will be used to generate the outbound co
 * `expires`: a `Date` object indicating the cookie's expiration date (expires at the end of session by default).
 * `path`: a string indicating the path of the cookie (`/` by default).
 * `domain`: a string indicating the domain of the cookie (no default).
-* `secure`: a boolean indicating whether the cookie is only to be sent over HTTPS (`false` by default for HTTP, `true` by default for HTTPS).
+* `secure`: a boolean indicating whether the cookie is only to be sent over HTTPS (`false` by default for HTTP, `true` by default for HTTPS). This is a **recommended** option if your app uses HTTPS. ([Read more about this option](#secure-cookies).)
 * `httpOnly`: a boolean indicating whether the cookie is only to be sent over HTTP(S), and not made available to client JavaScript (`true` by default).
 * `signed`: a boolean indicating whether the cookie is to be signed (`false` by default). If this is true, another cookie of the same name with the `.sig` suffix appended will also be sent, with a 27-byte url-safe base64 SHA1 value representing the hash of _cookie-name_=_cookie-value_ against the first [Keygrip](https://www.npmjs.com/package/keygrip) key. This signature key is used to detect tampering the next time a cookie is received.
 * `overwrite`: a boolean indicating whether to overwrite previously set cookies of the same name (`false` by default). If this is true, all cookies set during the same request with the same name (regardless of path or domain) are filtered out of the Set-Cookie header when setting this cookie.
+
+### secure cookies
+
+To send a secure cookie, you set a cookie with the `secure: true` option.
+
+HTTPS is necessary for secure cookies. When `cookies.set` is called with `secure: true` and a secure connection is not detected, the cookie will not be set and an error will be thrown.
+
+This library will test each request to see if it's secure by checking:
+
+* if the `protocol` property of the request is set to `https`, or
+* if the `connection.encrypted` property of the request is set to `true`.
+
+If your server is running behind a proxy and you are using `secure: true`, you need to configure your server to read the request headers added by your proxy to determine whether the request is using a secure connection.
+
+For more information about working behind proxies (please feel free to submit a pull request to add more):
+
+* For Koa - [`app.proxy = true`](http://koajs.com/#settings)
+* For Express - [trust proxy](http://expressjs.com/en/4x/api.html#trust.proxy.options.table)
+
+If your Koa or Express server is properly configured, the `protocol` property of the request will be set to match the protocol reported by the proxy in the `X-Forwarded-Proto` header.
 
 ## Example
 
