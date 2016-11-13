@@ -1,5 +1,5 @@
-unreleased
-==========
+0.6.2 / 2016-11-12
+==================
 
   * Fix `keys` deprecation message
   * deps: keygrip@~1.0.1
