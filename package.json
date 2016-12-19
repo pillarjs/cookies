@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "express": "4.9.8",
-    "istanbul": "0.4.4",
+    "istanbul": "0.4.5",
     "mocha": "2.5.3",
     "restify": "2.8.1",
     "supertest": "1.1.0"
