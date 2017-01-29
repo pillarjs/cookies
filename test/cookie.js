@@ -45,7 +45,7 @@ describe('new Cookie(name, value, [options])', function () {
       })
     })
 
-    describe('maxage', function () {
+    describe('maxAge', function () {
       it('should set the .maxAge property', function () {
         var cookie = new cookies.Cookie('foo', 'bar', { maxAge: 86400 })
         assert.equal(cookie.maxAge, 86400)
