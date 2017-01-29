@@ -116,6 +116,15 @@ describe('HTTP', function () {
       .expect(200, done)
     })
   })
+
+  describe('with array argument', function () {
+    it('should create keygrip with options.keys', function (done) {
+      request(createServer('https', ['a', 'b']))
+      .get('/')
+      .expect('Set-Cookie', /foo=bar/)
+      .expect(200, done)
+    })
+  })
 })
 
 function createServer(proto, opts) {
