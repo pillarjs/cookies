@@ -8,7 +8,6 @@
   ],
   "license": "MIT",
   "repository": "pillarjs/cookies",
-  "main": "./lib/cookies",
   "dependencies": {
     "depd": "~1.1.0",
     "keygrip": "~1.0.1"
@@ -21,10 +20,10 @@
     "supertest": "1.1.0"
   },
   "files": [
-    "lib/",
     "History.md",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "index.js"
   ],
   "engines": {
     "node": ">= 0.8"
