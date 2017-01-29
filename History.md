@@ -1,3 +1,8 @@
+unreleased
+==========
+
+  * Add `sameSite` option for SameSite cookie support
+
 0.6.2 / 2016-11-12
 ==================
 
