@@ -20,7 +20,7 @@
     "supertest": "1.1.0"
   },
   "files": [
-    "History.md",
+    "HISTORY.md",
     "LICENSE",
     "README.md",
     "index.js"
