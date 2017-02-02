@@ -5,6 +5,8 @@
  * MIT Licensed
  */
 
+'use strict'
+
 var deprecate = require('depd')('cookies')
 var Keygrip = require('keygrip')
 var http = require('http')
