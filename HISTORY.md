@@ -1,5 +1,5 @@
-unreleased
-==========
+0.7.0 / 2017-02-19
+==================
 
   * Add `sameSite` option for SameSite cookie support
   * pref: enable strict mode
