@@ -9,7 +9,7 @@
   "license": "MIT",
   "repository": "pillarjs/cookies",
   "dependencies": {
-    "depd": "~1.1.0",
+    "depd": "~1.1.1",
     "keygrip": "~1.0.1"
   },
   "devDependencies": {
