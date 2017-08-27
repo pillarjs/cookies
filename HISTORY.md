@@ -3,6 +3,8 @@ unreleased
 
   * deps: depd@~1.1.1
     - Remove unnecessary `Buffer` loading
+  * deps: keygrip@~1.0.2
+    - perf: improve comparison speed
 
 0.7.0 / 2017-02-19
 ==================
