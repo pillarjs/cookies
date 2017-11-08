@@ -27,6 +27,39 @@ describe('new Cookies(req, res, [options])', function () {
       .end(done)
     })
 
+    describe('"domain" option', function () {
+      it('should not be set by default', function (done) {
+        request(createServer(function (req, res, cookies) {
+          cookies.set('foo', 'bar')
+          res.end()
+        }))
+        .get('/')
+        .expect(200)
+        .expect(shouldSetCookieWithoutAttribute('foo', 'domain'))
+        .end(done)
+      })
+
+      it('should set to custom value', function (done) {
+        request(createServer(function (req, res, cookies) {
+          cookies.set('foo', 'bar', { domain: 'foo.local' })
+          res.end()
+        }))
+        .get('/')
+        .expect(200)
+        .expect(shouldSetCookieWithAttributeAndValue('foo', 'domain', 'foo.local'))
+        .end(done)
+      })
+
+      it('should reject invalid value', function (done) {
+        request(createServer(function (req, res, cookies) {
+          cookies.set('foo', 'bar', { domain: 'foo\nbar' })
+          res.end()
+        }))
+        .get('/')
+        .expect(500, 'TypeError: option domain is invalid', done)
+      })
+    })
+
     describe('"path" option', function () {
       it('should default to "/"', function (done) {
         request(createServer(function (req, res, cookies) {
@@ -120,5 +153,15 @@ function shouldSetCookieWithAttributeAndValue (name, attrib, value) {
     assert.equal(data.name, name, 'should set cookie ' + name)
     assert.ok((attrib.toLowerCase() in data), 'should set cookie with attribute ' + attrib)
     assert.equal(data[attrib.toLowerCase()], value, 'should set cookie with attribute ' + attrib + ' set to ' + value)
+  }
+}
+
+function shouldSetCookieWithoutAttribute (name, attrib) {
+  return function (res) {
+    var header = cookie(res)
+    var data = header && parseSetCookie(header)
+    assert.ok(header, 'should have a cookie header')
+    assert.equal(data.name, name, 'should set cookie ' + name)
+    assert.ok(!(attrib.toLowerCase() in data), 'should set cookie without attribute ' + attrib)
   }
 }
