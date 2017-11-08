@@ -15,6 +15,34 @@ describe('new Cookies(req, res, [options])', function () {
     .expect(200, 'OK', done)
   })
 
+  describe('.get(name, [options])', function () {
+    it('should return value of cookie', function (done) {
+      request(createServer(function (req, res, cookies) {
+        res.end(String(cookies.get('foo')))
+      }))
+      .get('/')
+      .set('Cookie', 'foo=bar')
+      .expect(200, 'bar', done)
+    })
+
+    it('should return undefined without cookie', function (done) {
+      request(createServer(function (req, res, cookies) {
+        res.end(String(cookies.get('fizz')))
+      }))
+      .get('/')
+      .set('Cookie', 'foo=bar')
+      .expect(200, 'undefined', done)
+    })
+
+    it('should return undefined without header', function (done) {
+      request(createServer(function (req, res, cookies) {
+        res.end(String(cookies.get('foo')))
+      }))
+      .get('/')
+      .expect(200, 'undefined', done)
+    })
+  })
+
   describe('.set(name, value, [options])', function () {
     it('should set cookie', function (done) {
       request(createServer(function (req, res, cookies) {
