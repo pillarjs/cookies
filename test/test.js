@@ -25,6 +25,15 @@ describe('new Cookies(req, res, [options])', function () {
       .expect(200, 'bar', done)
     })
 
+    it('should work for cookie name with special characters', function (done) {
+      request(createServer(function (req, res, cookies) {
+        res.end(String(cookies.get('foo*(#bar)?.|$')))
+      }))
+      .get('/')
+      .set('Cookie', 'foo*(#bar)?.|$=buzz')
+      .expect(200, 'buzz', done)
+    })
+
     it('should return undefined without cookie', function (done) {
       request(createServer(function (req, res, cookies) {
         res.end(String(cookies.get('fizz')))
@@ -52,6 +61,17 @@ describe('new Cookies(req, res, [options])', function () {
       .get('/')
       .expect(200)
       .expect(shouldSetCookieToValue('foo', 'bar'))
+      .end(done)
+    })
+
+    it('should work for cookie name with special characters', function (done) {
+      request(createServer(function (req, res, cookies) {
+        cookies.set('foo*(#bar)?.|$', 'buzz')
+        res.end()
+      }))
+      .get('/')
+      .expect(200)
+      .expect(shouldSetCookieToValue('foo*(#bar)?.|$', 'buzz'))
       .end(done)
     })
 
