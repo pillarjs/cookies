@@ -43,6 +43,16 @@ describe('new Cookie(name, value, [options])', function () {
         var cookie = new cookies.Cookie('foo', 'bar', { maxage: 86400 })
         assert.equal(cookie.maxage, 86400)
       })
+
+      it('should not set max-age attribute', function () {
+        var cookie = new cookies.Cookie('foo', 'bar', { maxage: 86400 })
+        assert.equal(/; max-age=/.test(cookie.toHeader()), false)
+      })
+
+      it('should set expires attribute', function () {
+        var cookie = new cookies.Cookie('foo', 'bar', { maxage: 86400 })
+        assert.equal(/; expires=/.test(cookie.toHeader()), true)
+      })
     })
 
     describe('maxAge', function () {
@@ -54,6 +64,17 @@ describe('new Cookie(name, value, [options])', function () {
       it('should set the .maxage property', function () {
         var cookie = new cookies.Cookie('foo', 'bar', { maxAge: 86400 })
         assert.equal(cookie.maxage, 86400)
+      })
+    })
+
+    describe('maxAgeRfc', function () {
+      it('should set the max-age attribute', function () {
+        var cookie = new cookies.Cookie('foo', 'bar', { maxAgeRfc: 86400 })
+        assert.equal(cookie.toHeader(), 'foo=bar; path=/; max-age=86400; httponly')
+      })
+      it('should take precedence over maxAge(expires)', function () {
+        var cookie = new cookies.Cookie('foo', 'bar', { maxAgeRfc: 86400, maxAge: 3600 })
+        assert.equal(cookie.toHeader(), 'foo=bar; path=/; max-age=86400; httponly')
       })
     })
 

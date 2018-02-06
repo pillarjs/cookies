@@ -148,6 +148,7 @@ function Cookie(name, value, attrs) {
 }
 
 Cookie.prototype.path = "/";
+Cookie.prototype.maxAgeRfc = undefined;
 Cookie.prototype.expires = undefined;
 Cookie.prototype.domain = undefined;
 Cookie.prototype.httpOnly = true;
@@ -162,10 +163,14 @@ Cookie.prototype.toString = function() {
 Cookie.prototype.toHeader = function() {
   var header = this.toString()
 
-  if (this.maxAge) this.expires = new Date(Date.now() + this.maxAge);
-
   if (this.path     ) header += "; path=" + this.path
-  if (this.expires  ) header += "; expires=" + this.expires.toUTCString()
+  if (this.maxAgeRfc) {
+    header += "; max-age=" + this.maxAgeRfc;
+  } else {
+    if (this.maxAge) this.expires = new Date(Date.now() + this.maxAge);
+    if (this.expires) header += "; expires=" + this.expires.toUTCString()
+  }
+
   if (this.domain   ) header += "; domain=" + this.domain
   if (this.sameSite ) header += "; samesite=" + (this.sameSite === true ? 'strict' : this.sameSite.toLowerCase())
   if (this.secure   ) header += "; secure"
