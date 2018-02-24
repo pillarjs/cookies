@@ -75,6 +75,41 @@ describe('new Cookies(req, res, [options])', function () {
       .end(done)
     })
 
+    describe('"httpOnly" option', function () {
+      it('should be set by default', function (done) {
+        request(createServer(function (req, res, cookies) {
+          cookies.set('foo', 'bar')
+          res.end()
+        }))
+        .get('/')
+        .expect(200)
+        .expect(shouldSetCookieWithAttribute('foo', 'httpOnly'))
+        .end(done)
+      })
+
+      it('should set to true', function (done) {
+        request(createServer(function (req, res, cookies) {
+          cookies.set('foo', 'bar', { httpOnly: true })
+          res.end()
+        }))
+        .get('/')
+        .expect(200)
+        .expect(shouldSetCookieWithAttribute('foo', 'httpOnly'))
+        .end(done)
+      })
+
+      it('should set to false', function (done) {
+        request(createServer(function (req, res, cookies) {
+          cookies.set('foo', 'bar', { httpOnly: false })
+          res.end()
+        }))
+        .get('/')
+        .expect(200)
+        .expect(shouldSetCookieWithoutAttribute('foo', 'httpOnly'))
+        .end(done)
+      })
+    })
+
     describe('"domain" option', function () {
       it('should not be set by default', function (done) {
         request(createServer(function (req, res, cookies) {
@@ -190,6 +225,16 @@ function shouldSetCookieToValue (name, val) {
     assert.ok(header, 'should have a cookie header')
     assert.equal(data.name, name, 'should set cookie ' + name)
     assert.equal(data.value, val, 'should set cookie ' + name + ' to ' + val)
+  }
+}
+
+function shouldSetCookieWithAttribute (name, attrib) {
+  return function (res) {
+    var header = cookie(res)
+    var data = header && parseSetCookie(header)
+    assert.ok(header, 'should have a cookie header')
+    assert.equal(data.name, name, 'should set cookie ' + name)
+    assert.ok((attrib.toLowerCase() in data), 'should set cookie with attribute ' + attrib)
   }
 }
 
