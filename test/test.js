@@ -143,6 +143,48 @@ describe('new Cookies(req, res, [options])', function () {
       })
     })
 
+    describe('"overwrite" option', function () {
+      it('should be off by default', function (done) {
+        request(createServer(function (req, res, cookies) {
+          cookies.set('foo', 'bar')
+          cookies.set('foo', 'baz')
+          res.end()
+        }))
+        .get('/')
+        .expect(200)
+        .expect(shouldSetCookieCount(2))
+        .expect(shouldSetCookieToValue('foo', 'bar'))
+        .end(done)
+      })
+
+      it('should overwrite same cookie by name when true', function (done) {
+        request(createServer(function (req, res, cookies) {
+          cookies.set('foo', 'bar')
+          cookies.set('foo', 'baz', { overwrite: true })
+          res.end()
+        }))
+        .get('/')
+        .expect(200)
+        .expect(shouldSetCookieCount(1))
+        .expect(shouldSetCookieToValue('foo', 'baz'))
+        .end(done)
+      })
+
+      it('should overwrite based on name only', function (done) {
+        request(createServer(function (req, res, cookies) {
+          cookies.set('foo', 'bar', { path: '/foo' })
+          cookies.set('foo', 'baz', { path: '/bar', overwrite: true })
+          res.end()
+        }))
+        .get('/')
+        .expect(200)
+        .expect(shouldSetCookieCount(1))
+        .expect(shouldSetCookieToValue('foo', 'baz'))
+        .expect(shouldSetCookieWithAttributeAndValue('foo', 'path', '/bar'))
+        .end(done)
+      })
+    })
+
     describe('"path" option', function () {
       it('should default to "/"', function (done) {
         request(createServer(function (req, res, cookies) {
@@ -216,6 +258,14 @@ function parseSetCookie (header) {
   }
 
   return cookie
+}
+
+function shouldSetCookieCount (num) {
+  return function (res) {
+    var setCookie = res.headers['set-cookie']
+    var count = setCookie ? setCookie.length : 0
+    assert.equal(count, num, 'should set cookie ' + num + ' times')
+  }
 }
 
 function shouldSetCookieToValue (name, val) {
