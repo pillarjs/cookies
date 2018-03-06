@@ -217,13 +217,51 @@ describe('new Cookies(req, res, [options])', function () {
         .expect(500, 'TypeError: option path is invalid', done)
       })
     })
+
+    describe('"signed" option', function () {
+      describe('when true', function () {
+        it('should throw without .keys', function (done) {
+          request(createServer(function (req, res, cookies) {
+            cookies.set('foo', 'bar', { signed: true })
+            res.end()
+          }))
+          .get('/')
+          .expect(500)
+          .expect('Error: .keys required for signed cookies')
+          .end(done)
+        })
+
+        it('should set additional .sig cookie', function (done) {
+          var opts = { keys: ['keyboard cat'] }
+          request(createServer(opts, function (req, res, cookies) {
+            cookies.set('foo', 'bar', { signed: true })
+            res.end()
+          }))
+          .get('/')
+          .expect(200)
+          .expect(shouldSetCookieCount(2))
+          .expect(shouldSetCookieToValue('foo', 'bar'))
+          .expect(shouldSetCookieToValue('foo.sig', 'iW2fuCIzk9Cg_rqLT1CAqrtdWs8'))
+          .end(done)
+        })
+
+        it('should use first key for signature', function (done) {
+          var opts = { keys: ['keyboard cat a', 'keyboard cat b'] }
+          request(createServer(opts, function (req, res, cookies) {
+            cookies.set('foo', 'bar', { signed: true })
+            res.end()
+          }))
+          .get('/')
+          .expect(200)
+          .expect(shouldSetCookieCount(2))
+          .expect(shouldSetCookieToValue('foo', 'bar'))
+          .expect(shouldSetCookieToValue('foo.sig', 'tecF04p5ua6TnfYxUTDskgWSKJE'))
+          .end(done)
+        })
+      })
+    })
   })
 })
-
-function cookie (res) {
-  var setCookie = res.headers['set-cookie']
-  return (setCookie && setCookie[0]) || undefined
-}
 
 function createServer (options, handler) {
   var next = handler || options
@@ -239,6 +277,21 @@ function createServer (options, handler) {
       res.end(e.name + ': ' + e.message)
     }
   })
+}
+
+function getCookieForName (res, name) {
+  var cookies = getCookies(res)
+
+  for (var i = 0; i < cookies.length; i++) {
+    if (cookies[i].name === name) {
+      return cookies[i]
+    }
+  }
+}
+
+function getCookies (res) {
+  var setCookies = res.headers['set-cookie'] || []
+  return setCookies.map(parseSetCookie)
 }
 
 function parseSetCookie (header) {
@@ -262,49 +315,40 @@ function parseSetCookie (header) {
 
 function shouldSetCookieCount (num) {
   return function (res) {
-    var setCookie = res.headers['set-cookie']
-    var count = setCookie ? setCookie.length : 0
+    var count = getCookies(res).length
     assert.equal(count, num, 'should set cookie ' + num + ' times')
   }
 }
 
 function shouldSetCookieToValue (name, val) {
   return function (res) {
-    var header = cookie(res)
-    var data = header && parseSetCookie(header)
-    assert.ok(header, 'should have a cookie header')
-    assert.equal(data.name, name, 'should set cookie ' + name)
-    assert.equal(data.value, val, 'should set cookie ' + name + ' to ' + val)
+    var cookie = getCookieForName(res, name)
+    assert.ok(cookie, 'should set cookie ' + name)
+    assert.equal(cookie.value, val, 'should set cookie ' + name + ' to ' + val)
   }
 }
 
 function shouldSetCookieWithAttribute (name, attrib) {
   return function (res) {
-    var header = cookie(res)
-    var data = header && parseSetCookie(header)
-    assert.ok(header, 'should have a cookie header')
-    assert.equal(data.name, name, 'should set cookie ' + name)
-    assert.ok((attrib.toLowerCase() in data), 'should set cookie with attribute ' + attrib)
+    var cookie = getCookieForName(res, name)
+    assert.ok(cookie, 'should set cookie ' + name)
+    assert.ok((attrib.toLowerCase() in cookie), 'should set cookie with attribute ' + attrib)
   }
 }
 
 function shouldSetCookieWithAttributeAndValue (name, attrib, value) {
   return function (res) {
-    var header = cookie(res)
-    var data = header && parseSetCookie(header)
-    assert.ok(header, 'should have a cookie header')
-    assert.equal(data.name, name, 'should set cookie ' + name)
-    assert.ok((attrib.toLowerCase() in data), 'should set cookie with attribute ' + attrib)
-    assert.equal(data[attrib.toLowerCase()], value, 'should set cookie with attribute ' + attrib + ' set to ' + value)
+    var cookie = getCookieForName(res, name)
+    assert.ok(cookie, 'should set cookie ' + name)
+    assert.ok((attrib.toLowerCase() in cookie), 'should set cookie with attribute ' + attrib)
+    assert.equal(cookie[attrib.toLowerCase()], value, 'should set cookie with attribute ' + attrib + ' set to ' + value)
   }
 }
 
 function shouldSetCookieWithoutAttribute (name, attrib) {
   return function (res) {
-    var header = cookie(res)
-    var data = header && parseSetCookie(header)
-    assert.ok(header, 'should have a cookie header')
-    assert.equal(data.name, name, 'should set cookie ' + name)
-    assert.ok(!(attrib.toLowerCase() in data), 'should set cookie without attribute ' + attrib)
+    var cookie = getCookieForName(res, name)
+    assert.ok(cookie, 'should set cookie ' + name)
+    assert.ok(!(attrib.toLowerCase() in cookie), 'should set cookie without attribute ' + attrib)
   }
 }
