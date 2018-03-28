@@ -104,7 +104,7 @@ Cookies.prototype.set = function(name, value, opts) {
 
   headers = pushCookie(headers, cookie)
 
-  if (opts && signed) {
+  if (signed) {
     if (!this.keys) throw new Error('.keys required for signed cookies');
     cookie.value = this.keys.sign(cookie.toString())
     cookie.name += ".sig"
