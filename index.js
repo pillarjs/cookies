@@ -102,13 +102,13 @@ Cookies.prototype.set = function(name, value, opts) {
     cookie.secure = opts.secureProxy
   }
 
-  headers = pushCookie(headers, cookie)
+  pushCookie(headers, cookie)
 
   if (opts && signed) {
     if (!this.keys) throw new Error('.keys required for signed cookies');
     cookie.value = this.keys.sign(cookie.toString())
     cookie.name += ".sig"
-    headers = pushCookie(headers, cookie)
+    pushCookie(headers, cookie)
   }
 
   var setHeader = res.set ? http.OutgoingMessage.prototype.setHeader : res.setHeader
@@ -193,12 +193,16 @@ function getPattern(name) {
   )
 }
 
-function pushCookie(cookies, cookie) {
+function pushCookie(headers, cookie) {
   if (cookie.overwrite) {
-    cookies = cookies.filter(function(c) { return c.indexOf(cookie.name+'=') !== 0 })
+    for (var i = headers.length - 1; i >= 0; i--) {
+      if (headers[i].indexOf(cookie.name + '=') === 0) {
+        headers.splice(i, 1)
+      }
+    }
   }
-  cookies.push(cookie.toHeader())
-  return cookies
+
+  headers.push(cookie.toHeader())
 }
 
 Cookies.connect = Cookies.express = function(keys) {
