@@ -55,12 +55,6 @@ describe('new Cookie(name, value, [options])', function () {
         var cookie = new cookies.Cookie('foo', 'bar', { maxAge: 86400 })
         assert.equal(cookie.maxage, 86400)
       })
-
-      it('.remove() should set the .maxAge property to 0', function () {
-        var cookie = new cookies.Cookie('foo', 'bar', { maxAge: 86400 })
-        cookies.remove('foo')
-        assert.equal(cookie.maxAge, 0)
-      })
     })
 
     describe('sameSite', function () {
