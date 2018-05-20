@@ -65,8 +65,8 @@ Cookies.prototype.get = function(name, opts) {
   value = match[1]
   if (!opts || !signed) return value
 
-  if (!this.keys) throw new Error('.keys required for signed cookies');
-  
+  if (!this.keys) throw new Error('.keys required for signed cookies')
+
   remote = this.get(sigName)
   if (!remote) return
 
@@ -163,7 +163,7 @@ Cookie.prototype.toString = function() {
 Cookie.prototype.toHeader = function() {
   var header = this.toString()
 
-  if (this.maxAge || 0 === this.maxAge) this.expires = new Date(Date.now() + this.maxAge);
+  if (this.maxAge) this.expires = new Date(Date.now() + this.maxAge);
 
   if (this.path     ) header += "; path=" + this.path
   if (this.expires  ) header += "; expires=" + this.expires.toUTCString()
