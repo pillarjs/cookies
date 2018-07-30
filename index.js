@@ -116,7 +116,7 @@ Cookies.prototype.set = function(name, value, opts) {
     pushCookie(headers, cookie)
   }
 
-  var protoSetHeader = http2 && res instanceof http2.Http2ServerResponse ? 
+  var protoSetHeader = http2 && res instanceof http2.Http2ServerResponse ?
     http2.Http2ServerResponse.prototype.setHeader : http.OutgoingMessage.prototype.setHeader;
   var setHeader = res.set ? protoSetHeader : res.setHeader
   setHeader.call(res, 'Set-Cookie', headers)

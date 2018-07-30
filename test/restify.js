@@ -8,8 +8,7 @@ var assert = require('assert')
   , Cookies = require('../')
   , request = require('supertest')
 
-if(!process.env.EXPOSE_HTTP2)
-describe('Restify', function () {
+if(!process.env.HTTP2_TEST) describe('Restify', function () {
   var header
   var server
 

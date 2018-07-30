@@ -4,7 +4,8 @@ var Cookies = require('..')
 var http = require('http')
 var request = require('supertest')
 
-if(process.env.EXPOSE_HTTP2){
+if(process.env.HTTP2_TEST){
+  request.http2 = true;
   http = require( "http2" )
 }
 

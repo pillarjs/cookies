@@ -5,7 +5,8 @@ var assert = require( "assert" )
   , Cookies = require( "../" )
   , request = require('supertest')
 
-if(process.env.EXPOSE_HTTP2){
+if(process.env.HTTP2_TEST){
+  request.http2 = true;
   http = require( "http2" )
 }
 
