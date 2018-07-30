@@ -25,5 +25,9 @@ script:
   - "test ! -z $(npm -ps ls istanbul) || npm test"
   - "test   -z $(npm -ps ls istanbul) || npm run-script test-ci"
   - "test   -z $(npm -ps ls eslint) || npm run-script lint"
+  # Run test script with http2
+  - "test $(echo $TRAVIS_NODE_VERSION | cut -d. -f1) -ge 8 || npm install https://github.com/sogaani/express.git#initial-support-http2 https://github.com/sogaani/supertest.git#http2"
+  - "test $(echo $TRAVIS_NODE_VERSION | cut -d. -f1) -ge 8 || npm test-http2"
+  - "test $(echo $TRAVIS_NODE_VERSION | cut -d. -f1) -ge 8 || npm run-script test-http2-ci"
 after_script:
   - "test -e ./coverage/lcov.info && npm install coveralls@2 && cat ./coverage/lcov.info | coveralls"

@@ -6,6 +6,10 @@ var assert = require( "assert" )
   , cookies = require( "../" ).express
   , request = require('supertest')
 
+if(process.env.EXPOSE_HTTP2){
+  http = require( "http2" )
+}
+
 describe('Express', function () {
   var server
   var header
@@ -65,7 +69,7 @@ describe('Express', function () {
       )
     })
 
-    server = require('http').createServer(app).listen()
+    server = http.createServer(app).listen()
   })
 
   it('should set cookies', function (done) {

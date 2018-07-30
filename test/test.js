@@ -4,6 +4,10 @@ var Cookies = require('..')
 var http = require('http')
 var request = require('supertest')
 
+if(process.env.EXPOSE_HTTP2){
+  http = require( "http2" )
+}
+
 describe('new Cookies(req, res, [options])', function () {
   it('should create new cookies instance', function (done) {
     request(createServer(function (req, res, cookies) {

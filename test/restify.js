@@ -1,3 +1,6 @@
+if(Number(process.version.split('.')[0].slice(1)) >= 8){
+  process.EventEmitter = require('events')
+}
 var assert = require('assert')
   , restify = require('restify')
   , keys = require('keygrip')(['a', 'b'])
@@ -5,6 +8,7 @@ var assert = require('assert')
   , Cookies = require('../')
   , request = require('supertest')
 
+if(!process.env.EXPOSE_HTTP2)
 describe('Restify', function () {
   var header
   var server

@@ -5,6 +5,10 @@ var assert = require( "assert" )
   , Cookies = require( "../" )
   , request = require('supertest')
 
+if(process.env.EXPOSE_HTTP2){
+  http = require( "http2" )
+}
+
 describe('HTTP', function () {
   var server
   var header
