@@ -98,7 +98,7 @@ If your Koa or Express server is properly configured, the `protocol` property of
 ## Example
 
 ```js
-var http    = require('http')
+var http = require('http')
 var Cookies = require('cookies')
 
 // Optionally define keys to sign cookie values
@@ -120,7 +120,7 @@ var server = http.createServer(function (req, res) {
     res.end('Welcome, first time visitor!')
   } else {
     res.setHeader('Content-Type', 'text/plain')
-    res.end('Welcome back! Nothing much changed since you last visit at ' + lastVisit + '.')
+    res.end('Welcome back! Nothing much changed since your last visit at ' + lastVisit + '.')
   }
 })
 
