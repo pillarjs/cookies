@@ -1,5 +1,5 @@
-unreleased
-==========
+0.7.2 / 2018-09-09
+==================
 
   * deps: depd@~1.1.2
   * perf: remove argument reassignment
