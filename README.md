@@ -97,48 +97,35 @@ If your Koa or Express server is properly configured, the `protocol` property of
 
 ## Example
 
-```javascript
-var http    = require( "http" )
-var Cookies = require( "cookies" )
+```js
+var http    = require('http')
+var Cookies = require('cookies')
 
-server = http.createServer( function( req, res ) {
-  var cookies = new Cookies( req, res, { "keys": keys } )
-    , unsigned, signed, tampered
+// Optionally define keys to sign cookie values
+// to prevent client tampering
+var keys = ['keyboard cat']
 
-  if ( req.url == "/set" ) {
-    cookies
-      // set a regular cookie
-      .set( "unsigned", "foo", { httpOnly: false } )
+var server = http.createServer(function (req, res) {
+  // Create a cookies object
+  var cookies = new Cookies(req, res, { keys: keys })
 
-      // set a signed cookie
-      .set( "signed", "bar", { signed: true } )
+  // Get a cookie
+  var lastVisit = cookies.get('LastVisit', { signed: true })
 
-      // mimic a signed cookie, but with a bogus signature
-      .set( "tampered", "baz" )
-      .set( "tampered.sig", "bogus" )
+  // Set the cookie to a value
+  cookies.set('LastVisit', new Date().toISOString(), { signed: true })
 
-    res.writeHead( 302, { "Location": "/" } )
-    return res.end( "Now let's check." )
+  if (!lastVisit) {
+    res.setHeader('Content-Type', 'text/plain')
+    res.end('Welcome, first time visitor!')
+  } else {
+    res.setHeader('Content-Type', 'text/plain')
+    res.end('Welcome back! Nothing much changed since you last visit at ' + lastVisit + '.')
   }
+})
 
-  unsigned = cookies.get( "unsigned" )
-  signed = cookies.get( "signed", { signed: true } )
-  tampered = cookies.get( "tampered", { signed: true } )
-
-  assert.equal( unsigned, "foo" )
-  assert.equal( signed, "bar" )
-  assert.notEqual( tampered, "baz" )
-  assert.equal( tampered, undefined )
-
-  res.writeHead( 200, { "Content-Type": "text/plain" } )
-  res.end(
-    "unsigned expected: foo\n\n" +
-    "unsigned actual: " + unsigned + "\n\n" +
-    "signed expected: bar\n\n" +
-    "signed actual: " + signed + "\n\n" +
-    "tampered expected: undefined\n\n"+
-    "tampered: " + tampered + "\n\n"
-  )
+server.listen(3000, function () {
+  console.log('Visit us at http://127.0.0.1:3000/ !')
 })
 ```
 
