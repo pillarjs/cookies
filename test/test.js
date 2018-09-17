@@ -2,10 +2,9 @@
 var assert = require('assert')
 var Cookies = require('..')
 var http = require('http')
-var request = require('supertest')
+var request = require('./support/supertest')
 
 if(process.env.HTTP2_TEST){
-  request.http2 = true;
   http = require( "http2" )
 }
 

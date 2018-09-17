@@ -1,13 +1,12 @@
 
 var assert = require( "assert" )
-  , express = require( "express" )
+  , express = require( "./support/express" )
   , http = require( "http" )
   , keys = require( "keygrip" )(['a', 'b'])
   , cookies = require( "../" ).express
-  , request = require('supertest')
+  , request = require('./support/supertest')
 
 if(process.env.HTTP2_TEST){
-  request.http2 = true;
   http = require( "http2" )
 }
 

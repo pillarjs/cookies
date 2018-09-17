@@ -6,7 +6,7 @@ var assert = require('assert')
   , keys = require('keygrip')(['a', 'b'])
   , http = require('http')
   , Cookies = require('../')
-  , request = require('supertest')
+  , request = require('./support/supertest')
 
 if(!process.env.HTTP2_TEST) describe('Restify', function () {
   var header

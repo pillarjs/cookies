@@ -3,10 +3,9 @@ var assert = require( "assert" )
   , http = require( "http" )
   , keys = require( "keygrip" )(['a', 'b'])
   , Cookies = require( "../" )
-  , request = require('supertest')
+  , request = require('./support/supertest')
 
 if(process.env.HTTP2_TEST){
-  request.http2 = true;
   http = require( "http2" )
 }
 
