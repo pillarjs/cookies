@@ -1,3 +1,9 @@
+unreleased
+==========
+
+  * deps: keygrip@~1.0.3
+    - perf: enable strict mode
+
 0.7.2 / 2018-09-09
 ==================
 
