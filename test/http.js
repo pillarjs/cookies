@@ -12,7 +12,7 @@ describe('HTTP', function () {
   before(function setup() {
     server = http.createServer( function( req, res ) {
       var cookies = new Cookies( req, res, keys )
-        , unsigned, signed, tampered, overwrite
+        , unsigned, signed, overwrite
 
       assert.equal( cookies.constructor, Cookies )
 
@@ -23,10 +23,6 @@ describe('HTTP', function () {
 
           // set a signed cookie
           .set( "signed", "bar", { signed: true } )
-
-          // mimic a signed cookie, but with a bogus signature
-          .set( "tampered", "baz" )
-          .set( "tampered.sig", "bogus" )
 
           // set a cookie that will be overwritten
           .set( "overwrite", "old-value", { signed: true } )
@@ -41,28 +37,21 @@ describe('HTTP', function () {
 
       unsigned = cookies.get( "unsigned" )
       signed = cookies.get( "signed", { signed: true } )
-      tampered = cookies.get( "tampered", { signed: true } )
       overwrite = cookies.get( "overwrite", { signed: true } )
 
       assert.equal( unsigned, "foo" )
       assert.equal( cookies.get( "unsigned.sig", { signed:false } ), undefined)
       assert.equal( signed, "bar" )
       assert.equal( cookies.get( "signed.sig", { signed: false } ), keys.sign('signed=bar') )
-      assert.notEqual( tampered, "baz" )
-      assert.equal( tampered, undefined )
       assert.equal( overwrite, "new-value" )
       assert.equal( cookies.get( "overwrite.sig", { signed:false } ), keys.sign('overwrite=new-value') )
-
-      assert.equal(res.getHeader('Set-Cookie'), 'tampered.sig=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; httponly')
 
       res.writeHead( 200, { "Content-Type": "text/plain" } )
       res.end(
         "unsigned expected: foo\n" +
         "unsigned actual: " + unsigned + "\n\n" +
         "signed expected: bar\n" +
-        "signed actual: " + signed + "\n\n" +
-        "tampered expected: undefined\n"+
-        "tampered: " + tampered + "\n"
+        "signed actual: " + signed + "\n"
       )
     }).listen()
   })
@@ -74,7 +63,7 @@ describe('HTTP', function () {
       if (err) return done(err)
 
       header = res.headers['set-cookie']
-      assert.equal(header.length, 9)
+      assert.equal(header.length, 7)
       done()
     })
   })

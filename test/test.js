@@ -50,6 +50,83 @@ describe('new Cookies(req, res, [options])', function () {
       .get('/')
       .expect(200, 'undefined', done)
     })
+
+    describe('"signed" option', function () {
+      describe('when true', function () {
+        it('should throw without .keys', function (done) {
+          request(createServer(function (req, res, cookies) {
+            res.end(String(cookies.get('foo', { signed: true })))
+          }))
+          .get('/')
+          .set('Cookie', 'foo=bar; foo.sig=iW2fuCIzk9Cg_rqLT1CAqrtdWs8')
+          .expect(500)
+          .expect('Error: .keys required for signed cookies')
+          .end(done)
+        })
+
+        it('should return signed cookie value', function (done) {
+          var opts = { keys: ['keyboard cat'] }
+          request(createServer(opts, function (req, res, cookies) {
+            res.end(String(cookies.get('foo', { signed: true })))
+          }))
+          .get('/')
+          .set('Cookie', 'foo=bar; foo.sig=iW2fuCIzk9Cg_rqLT1CAqrtdWs8')
+          .expect(200, 'bar', done)
+        })
+
+        describe('when signature is invalid', function () {
+          it('should return undefined', function (done) {
+            var opts = { keys: ['keyboard cat'] }
+            request(createServer(opts, function (req, res, cookies) {
+              res.end(String(cookies.get('foo', { signed: true })))
+            }))
+            .get('/')
+            .set('Cookie', 'foo=bar; foo.sig=v5f380JakwVgx2H9B9nA6kJaZNg')
+            .expect(200, 'undefined', done)
+          })
+
+          it('should delete signature cookie', function (done) {
+            var opts = { keys: ['keyboard cat'] }
+            request(createServer(opts, function (req, res, cookies) {
+              res.end(String(cookies.get('foo', { signed: true })))
+            }))
+            .get('/')
+            .set('Cookie', 'foo=bar; foo.sig=v5f380JakwVgx2H9B9nA6kJaZNg')
+            .expect(200)
+            .expect('undefined')
+            .expect(shouldSetCookieCount(1))
+            .expect(shouldSetCookieWithAttributeAndValue('foo.sig', 'expires', 'Thu, 01 Jan 1970 00:00:00 GMT'))
+            .end(done)
+          })
+        })
+
+        describe('when signature matches old key', function () {
+          it('should return signed value', function (done) {
+            var opts = { keys: ['keyboard cat a', 'keyboard cat b'] }
+            request(createServer(opts, function (req, res, cookies) {
+              res.end(String(cookies.get('foo', { signed: true })))
+            }))
+            .get('/')
+            .set('Cookie', 'foo=bar; foo.sig=NzdRHeORj7MtAMhSsILYRsyVNI8')
+            .expect(200, 'bar', done)
+          })
+
+          it('should set signature with new key', function (done) {
+            var opts = { keys: ['keyboard cat a', 'keyboard cat b'] }
+            request(createServer(opts, function (req, res, cookies) {
+              res.end(String(cookies.get('foo', { signed: true })))
+            }))
+            .get('/')
+            .set('Cookie', 'foo=bar; foo.sig=NzdRHeORj7MtAMhSsILYRsyVNI8')
+            .expect(200)
+            .expect('bar')
+            .expect(shouldSetCookieCount(1))
+            .expect(shouldSetCookieToValue('foo.sig', 'tecF04p5ua6TnfYxUTDskgWSKJE'))
+            .end(done)
+          })
+        })
+      })
+    })
   })
 
   describe('.set(name, value, [options])', function () {
