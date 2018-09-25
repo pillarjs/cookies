@@ -12,7 +12,7 @@ describe('HTTP', function () {
   before(function setup() {
     server = http.createServer( function( req, res ) {
       var cookies = new Cookies( req, res, keys )
-        , unsigned, signed, overwrite
+        , unsigned, signed
 
       assert.equal( cookies.constructor, Cookies )
 
@@ -24,10 +24,6 @@ describe('HTTP', function () {
           // set a signed cookie
           .set( "signed", "bar", { signed: true } )
 
-          // set a cookie that will be overwritten
-          .set( "overwrite", "old-value", { signed: true } )
-          .set( "overwrite", "new-value", { overwrite: true, signed: true } )
-
           // set a secure cookie
           .set( "sec", "yes", { secureProxy: true } )
 
@@ -37,14 +33,11 @@ describe('HTTP', function () {
 
       unsigned = cookies.get( "unsigned" )
       signed = cookies.get( "signed", { signed: true } )
-      overwrite = cookies.get( "overwrite", { signed: true } )
 
       assert.equal( unsigned, "foo" )
       assert.equal( cookies.get( "unsigned.sig", { signed:false } ), undefined)
       assert.equal( signed, "bar" )
       assert.equal( cookies.get( "signed.sig", { signed: false } ), keys.sign('signed=bar') )
-      assert.equal( overwrite, "new-value" )
-      assert.equal( cookies.get( "overwrite.sig", { signed:false } ), keys.sign('overwrite=new-value') )
 
       res.writeHead( 200, { "Content-Type": "text/plain" } )
       res.end(
@@ -63,7 +56,7 @@ describe('HTTP', function () {
       if (err) return done(err)
 
       header = res.headers['set-cookie']
-      assert.equal(header.length, 7)
+      assert.equal(header.length, 5)
       done()
     })
   })

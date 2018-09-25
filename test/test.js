@@ -335,6 +335,39 @@ describe('new Cookies(req, res, [options])', function () {
           .expect(shouldSetCookieToValue('foo.sig', 'tecF04p5ua6TnfYxUTDskgWSKJE'))
           .end(done)
         })
+
+        describe('with "path"', function () {
+          it('should set additional .sig cookie with path', function (done) {
+            var opts = { keys: ['keyboard cat'] }
+            request(createServer(opts, function (req, res, cookies) {
+              cookies.set('foo', 'bar', { signed: true, path: '/admin' })
+              res.end()
+            }))
+            .get('/')
+            .expect(200)
+            .expect(shouldSetCookieCount(2))
+            .expect(shouldSetCookieWithAttributeAndValue('foo', 'path', '/admin'))
+            .expect(shouldSetCookieWithAttributeAndValue('foo.sig', 'path', '/admin'))
+            .end(done)
+          })
+        })
+
+        describe('with "overwrite"', function () {
+          it('should set additional .sig cookie with httpOnly', function (done) {
+            var opts = { keys: ['keyboard cat'] }
+            request(createServer(opts, function (req, res, cookies) {
+              cookies.set('foo', 'bar', { signed: true })
+              cookies.set('foo', 'baz', { signed: true, overwrite: true })
+              res.end()
+            }))
+            .get('/')
+            .expect(200)
+            .expect(shouldSetCookieCount(2))
+            .expect(shouldSetCookieToValue('foo', 'baz'))
+            .expect(shouldSetCookieToValue('foo.sig', 'ptOkbbiPiGfLWRzz1yXP3XqaW4E'))
+            .end(done)
+          })
+        })
       })
     })
   })
