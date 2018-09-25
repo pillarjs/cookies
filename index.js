@@ -11,6 +11,11 @@ var deprecate = require('depd')('cookies')
 var Keygrip = require('keygrip')
 var http = require('http')
 var cache = {}
+var http2 = null;
+try{
+  http2 = require('http2');
+}catch(_){
+}
 
 /**
  * RegExp to match field-content in RFC 7230 sec 3.2
@@ -111,7 +116,9 @@ Cookies.prototype.set = function(name, value, opts) {
     pushCookie(headers, cookie)
   }
 
-  var setHeader = res.set ? http.OutgoingMessage.prototype.setHeader : res.setHeader
+  var protoSetHeader = http2 && res instanceof http2.Http2ServerResponse ?
+    http2.Http2ServerResponse.prototype.setHeader : http.OutgoingMessage.prototype.setHeader;
+  var setHeader = res.set ? protoSetHeader : res.setHeader
   setHeader.call(res, 'Set-Cookie', headers)
   return this
 };

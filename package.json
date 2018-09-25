@@ -14,11 +14,11 @@
   },
   "devDependencies": {
     "eslint": "3.19.0",
-    "express": "4.9.8",
+    "express": "4.16.3",
     "istanbul": "0.4.5",
     "mocha": "2.5.3",
     "restify": "2.8.1",
-    "supertest": "1.1.0"
+    "supertest": "2.0"
   },
   "files": [
     "HISTORY.md",
@@ -32,6 +32,7 @@
   "scripts": {
     "lint": "eslint .",
     "test": "mocha --require test/support/env --reporter spec --bail --check-leaks test/",
+    "test-http2": "HTTP2_TEST=1 mocha --require test/support/env --reporter spec --bail --check-leaks test/",
     "test-ci": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --require test/support/env --reporter spec --check-leaks test/",
     "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --require test/support/env --reporter dot --check-leaks test/"
   }

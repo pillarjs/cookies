@@ -2,7 +2,11 @@
 var assert = require('assert')
 var Cookies = require('..')
 var http = require('http')
-var request = require('supertest')
+var request = require('./support/supertest')
+
+if(process.env.HTTP2_TEST){
+  http = require( "http2" )
+}
 
 describe('new Cookies(req, res, [options])', function () {
   it('should create new cookies instance', function (done) {
