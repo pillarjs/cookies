@@ -373,6 +373,31 @@ describe('new Cookies(req, res, [options])', function () {
   })
 })
 
+describe('Cookies(req, res, [options])', function () {
+  it('should create new cookies instance', function (done) {
+    var server = http.createServer(function (req, res) {
+      try {
+        var cookies = Cookies(req, res, { keys: ['a', 'b'] })
+        assert.ok(cookies)
+        assert.strictEqual(cookies.constructor, Cookies)
+        assert.strictEqual(cookies.request, req)
+        assert.strictEqual(cookies.response, res)
+        assert.strictEqual(typeof cookies.keys, 'object')
+        res.end('OK')
+      } catch (e) {
+        res.statusCode = 500
+        res.end(e.name + ': ' + e.message)
+      }
+    })
+
+    request(server)
+    .get('/')
+    .expect('OK')
+    .expect(200)
+    .end(done)
+  })
+})
+
 function createServer (options, handler) {
   var next = handler || options
   var opts = next === options ? undefined : options
