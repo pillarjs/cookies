@@ -285,6 +285,17 @@ describe('new Cookies(req, res, [options])', function () {
         .end(done)
       })
 
+      it('should set to ""', function (done) {
+        request(createServer(function (req, res, cookies) {
+          cookies.set('foo', 'bar', { path: '' })
+          res.end()
+        }))
+        .get('/')
+        .expect(200)
+        .expect(shouldSetCookieWithoutAttribute('foo', 'path'))
+        .end(done)
+      })
+
       it('should reject invalid value', function (done) {
         request(createServer(function (req, res, cookies) {
           cookies.set('foo', 'bar', { path: 'foo\nbar' })
