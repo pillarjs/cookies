@@ -1,70 +1,10 @@
 
-var assert = require( "assert" )
-  , http = require( "http" )
+var http = require('http')
   , keys = require( "keygrip" )(['a', 'b'])
   , Cookies = require( "../" )
   , request = require('supertest')
 
 describe('HTTP', function () {
-  var server
-  var header
-
-  before(function setup() {
-    server = http.createServer( function( req, res ) {
-      var cookies = new Cookies( req, res, keys )
-        , unsigned, signed
-
-      assert.equal( cookies.constructor, Cookies )
-
-      if ( req.url == "/set" ) {
-        cookies
-          // set a regular cookie
-          .set( "unsigned", "foo", { signed:false, httpOnly: false } )
-
-          // set a signed cookie
-          .set( "signed", "bar", { signed: true } )
-
-        res.writeHead( 302, { "Location": "/" } )
-        return res.end( "Now let's check." )
-      }
-
-      unsigned = cookies.get( "unsigned" )
-      signed = cookies.get( "signed", { signed: true } )
-
-      assert.equal( unsigned, "foo" )
-      assert.equal( cookies.get( "unsigned.sig", { signed:false } ), undefined)
-      assert.equal( signed, "bar" )
-      assert.equal( cookies.get( "signed.sig", { signed: false } ), keys.sign('signed=bar') )
-
-      res.writeHead( 200, { "Content-Type": "text/plain" } )
-      res.end(
-        "unsigned expected: foo\n" +
-        "unsigned actual: " + unsigned + "\n\n" +
-        "signed expected: bar\n" +
-        "signed actual: " + signed + "\n"
-      )
-    }).listen()
-  })
-
-  it('should set cookies', function (done) {
-    request(server)
-    .get('/set')
-    .expect(302, function (err, res) {
-      if (err) return done(err)
-
-      header = res.headers['set-cookie']
-      assert.equal(header.length, 3)
-      done()
-    })
-  })
-
-  it('should get cookies', function (done) {
-    request(server)
-    .get('/')
-    .set('Cookie', header.join(';'))
-    .expect(200, done)
-  })
-
   describe('with "secure" option', function () {
     it('should check connection when undefined; unencrypted', function (done) {
       request(createServer( "http", { "keys": keys } ))
