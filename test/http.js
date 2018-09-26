@@ -24,9 +24,6 @@ describe('HTTP', function () {
           // set a signed cookie
           .set( "signed", "bar", { signed: true } )
 
-          // set a secure cookie
-          .set( "sec", "yes", { secureProxy: true } )
-
         res.writeHead( 302, { "Location": "/" } )
         return res.end( "Now let's check." )
       }
@@ -56,7 +53,7 @@ describe('HTTP', function () {
       if (err) return done(err)
 
       header = res.headers['set-cookie']
-      assert.equal(header.length, 5)
+      assert.equal(header.length, 3)
       done()
     })
   })

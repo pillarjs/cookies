@@ -337,6 +337,19 @@ describe('new Cookies(req, res, [options])', function () {
       })
     })
 
+    describe('"secureProxy" option', function () {
+      it('should set secure attribute over http', function (done) {
+        request(createServer(function (req, res, cookies) {
+          cookies.set('foo', 'bar', { secureProxy: true })
+          res.end()
+        }))
+        .get('/')
+        .expect(200)
+        .expect(shouldSetCookieWithAttribute('foo', 'Secure'))
+        .end(done)
+      })
+    })
+
     describe('"signed" option', function () {
       describe('when true', function () {
         it('should throw without .keys', function (done) {
@@ -407,6 +420,22 @@ describe('new Cookies(req, res, [options])', function () {
             .expect(shouldSetCookieCount(2))
             .expect(shouldSetCookieToValue('foo', 'baz'))
             .expect(shouldSetCookieToValue('foo.sig', 'ptOkbbiPiGfLWRzz1yXP3XqaW4E'))
+            .end(done)
+          })
+        })
+
+        describe('with "secureProxy"', function () {
+          it('should set additional .sig cookie with secure', function (done) {
+            var opts = { keys: ['keyboard cat'] }
+            request(createServer(opts, function (req, res, cookies) {
+              cookies.set('foo', 'bar', { signed: true, secureProxy: true })
+              res.end()
+            }))
+            .get('/')
+            .expect(200)
+            .expect(shouldSetCookieCount(2))
+            .expect(shouldSetCookieWithAttribute('foo', 'Secure'))
+            .expect(shouldSetCookieWithAttribute('foo.sig', 'Secure'))
             .end(done)
           })
         })
