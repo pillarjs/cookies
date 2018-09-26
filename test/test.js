@@ -2,17 +2,73 @@
 var assert = require('assert')
 var Cookies = require('..')
 var http = require('http')
+var Keygrip = require('keygrip')
 var request = require('supertest')
 
 describe('new Cookies(req, res, [options])', function () {
   it('should create new cookies instance', function (done) {
-    request(createServer(function (req, res, cookies) {
+    assertServer(done, function (req, res) {
+      var cookies = new Cookies(req, res)
       assert.ok(cookies)
-      assert.equal(cookies.constructor, Cookies)
-      res.end('OK')
-    }))
-    .get('/')
-    .expect(200, 'OK', done)
+      assert.strictEqual(cookies.constructor, Cookies)
+      assert.strictEqual(cookies.request, req)
+      assert.strictEqual(cookies.response, res)
+      assert.strictEqual(cookies.keys, undefined)
+    })
+  })
+
+  describe('options', function () {
+    it('should accept array of keys', function (done) {
+      assertServer(done, function (req, res) {
+        var cookies = new Cookies(req, res, ['keyboard cat'])
+        assert.strictEqual(typeof cookies.keys, 'object')
+        assert.strictEqual(cookies.keys.sign('foo=bar'), 'iW2fuCIzk9Cg_rqLT1CAqrtdWs8')
+      })
+    })
+
+    it('should accept Keygrip instance', function (done) {
+      assertServer(done, function (req, res) {
+        var keys = new Keygrip(['keyboard cat'])
+        var cookies = new Cookies(req, res, keys)
+        assert.strictEqual(typeof cookies.keys, 'object')
+        assert.strictEqual(cookies.keys.sign('foo=bar'), 'iW2fuCIzk9Cg_rqLT1CAqrtdWs8')
+      })
+    })
+
+    describe('.keys', function () {
+      it('should accept array of keys', function (done) {
+        assertServer(done, function (req, res) {
+          var cookies = new Cookies(req, res, { keys: ['keyboard cat'] })
+          assert.strictEqual(typeof cookies.keys, 'object')
+          assert.strictEqual(cookies.keys.sign('foo=bar'), 'iW2fuCIzk9Cg_rqLT1CAqrtdWs8')
+        })
+      })
+
+      it('should accept Keygrip instance', function (done) {
+        assertServer(done, function (req, res) {
+          var keys = new Keygrip(['keyboard cat'])
+          var cookies = new Cookies(req, res, { keys: keys })
+          assert.strictEqual(typeof cookies.keys, 'object')
+          assert.strictEqual(cookies.keys.sign('foo=bar'), 'iW2fuCIzk9Cg_rqLT1CAqrtdWs8')
+        })
+      })
+    })
+
+    describe('.secure', function () {
+      it('should default to undefined', function (done) {
+        assertServer(done, function (req, res) {
+          var cookies = new Cookies(req, res)
+          assert.strictEqual(cookies.secure, undefined)
+        })
+      })
+
+      it('should set secure flag', function (done) {
+        assertServer(done, function (req, res) {
+          var cookies = new Cookies(req, res, { secure: true })
+          assert.strictEqual(cookies.secure, true)
+        })
+      })
+    })
   })
 
   describe('.get(name, [options])', function () {
@@ -446,28 +502,34 @@ describe('new Cookies(req, res, [options])', function () {
 
 describe('Cookies(req, res, [options])', function () {
   it('should create new cookies instance', function (done) {
-    var server = http.createServer(function (req, res) {
-      try {
-        var cookies = Cookies(req, res, { keys: ['a', 'b'] })
-        assert.ok(cookies)
-        assert.strictEqual(cookies.constructor, Cookies)
-        assert.strictEqual(cookies.request, req)
-        assert.strictEqual(cookies.response, res)
-        assert.strictEqual(typeof cookies.keys, 'object')
-        res.end('OK')
-      } catch (e) {
-        res.statusCode = 500
-        res.end(e.name + ': ' + e.message)
-      }
+    assertServer(done, function (req, res) {
+      var cookies = Cookies(req, res, { keys: ['a', 'b'] })
+      assert.ok(cookies)
+      assert.strictEqual(cookies.constructor, Cookies)
+      assert.strictEqual(cookies.request, req)
+      assert.strictEqual(cookies.response, res)
+      assert.strictEqual(typeof cookies.keys, 'object')
     })
-
-    request(server)
-    .get('/')
-    .expect('OK')
-    .expect(200)
-    .end(done)
   })
 })
+
+function assertServer (done, test) {
+  var server = http.createServer(function (req, res) {
+    try {
+      test(req, res)
+      res.end('OK')
+    } catch (e) {
+      res.statusCode = 500
+      res.end(e.name + ': ' + e.message)
+    }
+  })
+
+  request(server)
+  .get('/')
+  .expect('OK')
+  .expect(200)
+  .end(done)
+}
 
 function createServer (options, handler) {
   var next = handler || options
