@@ -30,23 +30,6 @@ describe('HTTP', function () {
       .expect(500, 'Cannot send secure cookie over unencrypted connection', done)
     })
   })
-
-  describe('with array "keys" options', function () {
-    it('should create keygrip with options.keys', function (done) {
-      request(createServer( "http", { "keys": ['a', 'b'], "secure": true } ))
-      .get('/')
-      .expect(200, done)
-    })
-  })
-
-  describe('with array argument', function () {
-    it('should create keygrip with options.keys', function (done) {
-      request(createServer('https', ['a', 'b']))
-      .get('/')
-      .expect('Set-Cookie', /foo=bar/)
-      .expect(200, done)
-    })
-  })
 })
 
 function createServer(proto, opts) {
