@@ -1,8 +1,11 @@
 
 var assert = require('assert')
 var Cookies = require('..')
+var fs = require('fs')
 var http = require('http')
+var https = require('https')
 var Keygrip = require('keygrip')
+var path = require('path')
 var request = require('supertest')
 
 describe('new Cookies(req, res, [options])', function () {
@@ -393,6 +396,63 @@ describe('new Cookies(req, res, [options])', function () {
       })
     })
 
+    describe('"secure" option', function () {
+      describe('when true', function () {
+        it('should throw on unencrypted connection', function (done) {
+          request(createServer(function (req, res, cookies) {
+            cookies.set('foo', 'bar', { secure: true })
+            res.end()
+          }))
+          .get('/')
+          .expect(500)
+          .expect('Error: Cannot send secure cookie over unencrypted connection')
+          .end(done)
+        })
+
+        it('should set secure attribute on encrypted connection', function (done) {
+          var server = createSecureServer(function (req, res, cookies) {
+            cookies.set('foo', 'bar', { secure: true })
+            res.end()
+          })
+
+          request(server)
+          .get('/')
+          .ca(server.cert)
+          .expect(200)
+          .expect(shouldSetCookieWithAttribute('foo', 'Secure'))
+          .end(done)
+        })
+
+        describe('with "secure: true" constructor option', function () {
+          it('should set secure attribute on unencrypted connection', function (done) {
+            var opts = { secure: true }
+            request(createServer(opts, function (req, res, cookies) {
+              cookies.set('foo', 'bar', { secure: true })
+              res.end()
+            }))
+            .get('/')
+            .expect(200)
+            .expect(shouldSetCookieWithAttribute('foo', 'Secure'))
+            .end(done)
+          })
+        })
+
+        describe('with req.protocol === "https"', function () {
+          it('should set secure attribute on unencrypted connection', function (done) {
+            request(createServer(function (req, res, cookies) {
+              req.protocol = 'https'
+              cookies.set('foo', 'bar', { secure: true })
+              res.end()
+            }))
+            .get('/')
+            .expect(200)
+            .expect(shouldSetCookieWithAttribute('foo', 'Secure'))
+            .end(done)
+          })
+        })
+      })
+    })
+
     describe('"secureProxy" option', function () {
       it('should set secure attribute over http', function (done) {
         request(createServer(function (req, res, cookies) {
@@ -531,11 +591,11 @@ function assertServer (done, test) {
   .end(done)
 }
 
-function createServer (options, handler) {
+function createRequestListener (options, handler) {
   var next = handler || options
   var opts = next === options ? undefined : options
 
-  return http.createServer(function (req, res) {
+  return function (req, res) {
     var cookies = new Cookies(req, res, opts)
 
     try {
@@ -544,7 +604,20 @@ function createServer (options, handler) {
       res.statusCode = 500
       res.end(e.name + ': ' + e.message)
     }
-  })
+  }
+}
+
+function createSecureServer (options, handler) {
+  var cert = fs.readFileSync(path.join(__dirname, 'fixtures', 'server.crt'), 'ascii')
+  var key = fs.readFileSync(path.join(__dirname, 'fixtures', 'server.key'), 'ascii')
+
+  return https.createServer({ cert: cert, key: key })
+    .on('request', createRequestListener(options, handler))
+}
+
+function createServer (options, handler) {
+  return http.createServer()
+    .on('request', createRequestListener(options, handler))
 }
 
 function getCookieForName (res, name) {
