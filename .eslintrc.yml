@@ -4,3 +4,4 @@ rules:
   indent: ["error", 2, { "SwitchCase": 1 }]
   no-param-reassign: error
   no-trailing-spaces: error
+  no-unused-vars: ["error", { "vars": "all", "args": "none", "ignoreRestSiblings": true }]

@@ -1,7 +1,6 @@
 var assert = require('assert')
   , restify = require('restify')
   , keys = require('keygrip')(['a', 'b'])
-  , http = require('http')
   , Cookies = require('../')
   , request = require('supertest')
 

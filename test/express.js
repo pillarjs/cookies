@@ -1,7 +1,6 @@
 
 var assert = require( "assert" )
   , express = require( "express" )
-  , http = require( "http" )
   , keys = require( "keygrip" )(['a', 'b'])
   , cookies = require( "../" ).express
   , request = require('supertest')
