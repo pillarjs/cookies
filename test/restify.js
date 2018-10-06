@@ -8,7 +8,7 @@ describe('Restify', function () {
   var header
   var server
 
-  before(function setup(done) {
+  before(function (done) {
     server = restify.createServer()
 
     server.get('/set', function (req, res) {
@@ -22,6 +22,10 @@ describe('Restify', function () {
     })
 
     server.listen(done)
+  })
+
+  after(function (done) {
+    server.close(done)
   })
 
   it('should set cookies', function (done) {

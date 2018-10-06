@@ -9,7 +9,7 @@ describe('Express', function () {
   var server
   var header
 
-  before(function setup() {
+  before(function (done) {
     var app = express()
 
     app.use( cookies( keys ) )
@@ -53,7 +53,11 @@ describe('Express', function () {
       )
     })
 
-    server = require('http').createServer(app).listen()
+    server = app.listen(done)
+  })
+
+  after(function (done) {
+    server.close(done)
   })
 
   it('should set cookies', function (done) {
