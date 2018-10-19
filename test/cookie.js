@@ -32,6 +32,26 @@ describe('new Cookie(name, value, [options])', function () {
     }, /option domain is invalid/)
   })
 
+  describe('set value', function(){
+    it('should set the correct header when value is positive number', function(){
+      var cookie = new cookies.Cookie('foo', 1);
+
+      assert.equal(cookie.toHeader(), 'foo=1; path=/; httponly');
+    })
+
+    it('should set the correct header when value is negative number', function(){
+      var cookie = new cookies.Cookie('foo', -1);
+
+      assert.equal(cookie.toHeader(), 'foo=-1; path=/; httponly');
+    })
+
+    it('should set the correct header when value is 0', function(){
+      var cookie = new cookies.Cookie('foo', 0);
+
+      assert.equal(cookie.toHeader(), 'foo=0; path=/; httponly');
+    })
+  })
+
   describe('options', function () {
     describe('maxage', function () {
       it('should set the .maxAge property', function () {

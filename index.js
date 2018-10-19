@@ -117,6 +117,8 @@ Cookies.prototype.set = function(name, value, opts) {
 };
 
 function Cookie(name, value, attrs) {
+  var value = value === 0 ? value+'' : value;
+
   if (!fieldContentRegExp.test(name)) {
     throw new TypeError('argument name is invalid');
   }
