@@ -1,11 +1,14 @@
 
 var assert = require( "assert" )
-  , express = require( "express" )
   , keys = require( "keygrip" )(['a', 'b'])
   , cookies = require( "../" ).express
   , request = require('supertest')
 
-describe('Express', function () {
+var express = tryRequire('express')
+
+var describeExpress = express ? describe : describe.skip
+
+describeExpress('Express', function () {
   var server
   var header
 
@@ -134,3 +137,11 @@ describe('Express', function () {
     })
   })
 })
+
+function tryRequire (name) {
+  try {
+    return require(name)
+  } catch (e) {
+    return undefined
+  }
+}

@@ -1,10 +1,13 @@
 var assert = require('assert')
-  , restify = require('restify')
   , keys = require('keygrip')(['a', 'b'])
   , Cookies = require('../')
   , request = require('supertest')
 
-describe('Restify', function () {
+var restify = tryRequire('restify')
+
+var describeRestify = restify ? describe : describe.skip
+
+describeRestify('Restify', function () {
   var header
   var server
 
@@ -78,4 +81,12 @@ function assertSetCookieHeader(header) {
   assert.ok(/^signed\.sig=.{27}; path=\/; httponly$/.test(header[2]))
   assert.equal(header[3], 'overwrite=new-value; path=/; httponly')
   assert.ok(/^overwrite\.sig=.{27}; path=\/; httponly$/.test(header[4]))
+}
+
+function tryRequire (name) {
+  try {
+    return require(name)
+  } catch (e) {
+    return undefined
+  }
 }
