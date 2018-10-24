@@ -17,7 +17,7 @@
     "express": "4.16.4",
     "istanbul": "0.4.5",
     "mocha": "5.2.0",
-    "restify": "2.8.1",
+    "restify": "6.4.0",
     "supertest": "3.3.0"
   },
   "files": [

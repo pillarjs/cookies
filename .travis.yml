@@ -50,6 +50,12 @@ before_install:
       npm rm --silent --save-dev express
     fi
   - |
+    # restify framework
+    # - remove on Node.js < 0.10
+    if [[ "$(cut -d. -f1 <<< "$TRAVIS_NODE_VERSION")" -eq 0 && "$(cut -d. -f2 <<< "$TRAVIS_NODE_VERSION")" -lt 10 ]]; then
+      npm rm --silent --save-dev restify
+    fi
+  - |
     # eslint for linting
     # - remove on Node.js < 4
     if [[ "$(cut -d. -f1 <<< "$TRAVIS_NODE_VERSION")" -lt 4 ]]; then
