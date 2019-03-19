@@ -162,7 +162,7 @@ Cookie.prototype.toString = function() {
 Cookie.prototype.toHeader = function() {
   var header = this.toString()
 
-  if (this.maxAge) this.expires = new Date(Date.now() + this.maxAge);
+  if (this.maxAge) this.expires = new Date(Date.now() + this.maxAge * 1000);
 
   if (this.maxAge   ) header += "; max-age=" + this.maxAge
   if (this.path     ) header += "; path=" + this.path
