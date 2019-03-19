@@ -297,7 +297,7 @@ describe('new Cookies(req, res, [options])', function () {
         .end(done)
       })
 
-      it('should not set the "maxAge" attribute', function (done) {
+      it('should set the "maxAge" attribute', function (done) {
         request(createServer(function (req, res, cookies) {
           cookies.set('foo', 'bar', { maxAge: 86400000 })
           res.end()
@@ -305,7 +305,7 @@ describe('new Cookies(req, res, [options])', function () {
         .get('/')
         .expect(200)
         .expect(shouldSetCookieWithAttribute('foo', 'expires'))
-        .expect(shouldSetCookieWithoutAttribute('foo', 'maxAge'))
+        .expect(shouldSetCookieWithAttribute('foo', 'max-age'))
         .end(done)
       })
     })
