@@ -308,6 +308,17 @@ describe('new Cookies(req, res, [options])', function () {
         .expect(shouldSetCookieWithAttribute('foo', 'max-age'))
         .end(done)
       })
+
+      it('should convert the "maxAge" attribute to seconds', function (done) {
+        request(createServer(function (req, res, cookies) {
+          cookies.set('foo', 'bar', { maxAge: 86400001 })
+          res.end()
+        }))
+        .get('/')
+        .expect(200)
+        .expect(shouldSetCookieWithAttributeAndValue('foo', 'max-age', '86400'))
+        .end(done)
+      })
     })
 
     describe('"overwrite" option', function () {
