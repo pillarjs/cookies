@@ -281,7 +281,7 @@ describe('new Cookies(req, res, [options])', function () {
 
     describe('"maxAge" option', function () {
       it('should set the "expires" attribute', function (done) {
-        var maxAge = 86400
+        var maxAge = 86400000
         request(createServer(function (req, res, cookies) {
           cookies.set('foo', 'bar', { maxAge: maxAge })
           res.end()
@@ -291,7 +291,7 @@ describe('new Cookies(req, res, [options])', function () {
         .expect(shouldSetCookieWithAttribute('foo', 'expires'))
         .expect(function (res) {
           var cookie = getCookieForName(res, 'foo')
-          var expected = new Date(Date.parse(res.headers.date) + maxAge * 1000).toUTCString()
+          var expected = new Date(Date.parse(res.headers.date) + maxAge).toUTCString()
           assert.strictEqual(cookie.expires, expected)
         })
         .end(done)
@@ -299,7 +299,7 @@ describe('new Cookies(req, res, [options])', function () {
 
       it('should set the "maxAge" attribute', function (done) {
         request(createServer(function (req, res, cookies) {
-          cookies.set('foo', 'bar', { maxAge: 86400 })
+          cookies.set('foo', 'bar', { maxAge: 86400000 })
           res.end()
         }))
         .get('/')
