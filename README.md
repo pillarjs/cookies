@@ -65,7 +65,7 @@ If the _value_ is omitted, an outbound header with an expired date is used to de
 
 If the _options_ object is provided, it will be used to generate the outbound cookie header as follows:
 
-* `maxAge`: a number representing the milliseconds from `Date.now()` for expiry
+* `maxAge`: a number representing the milliseconds from `Date.now()` for expiry. If this and `expires` are both set this will take precedence. This value will be converted to seconds before being added to the Set-Cookie header
 * `expires`: a `Date` object indicating the cookie's expiration date (expires at the end of session by default).
 * `path`: a string indicating the path of the cookie (`/` by default).
 * `domain`: a string indicating the domain of the cookie (no default).
