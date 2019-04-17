@@ -211,6 +211,17 @@ describe('new Cookies(req, res, [options])', function () {
       .end(done)
     })
 
+    it('should work for cookie value with special characters', function (done) {
+      request(createServer(function (req, res, cookies) {
+        cookies.set('foo', '*(#bar)?.|$')
+        res.end()
+      }))
+      .get('/')
+      .expect(200)
+      .expect(shouldSetCookieToValue('foo', '*(#bar)?.|$'))
+      .end(done)
+    })
+
     describe('"httpOnly" option', function () {
       it('should be set by default', function (done) {
         request(createServer(function (req, res, cookies) {
