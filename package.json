@@ -16,7 +16,7 @@
     "eslint": "3.19.0",
     "express": "4.16.4",
     "istanbul": "0.4.5",
-    "mocha": "5.2.0",
+    "mocha": "6.1.4",
     "restify": "6.4.0",
     "supertest": "3.4.2"
   },
