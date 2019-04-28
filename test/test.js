@@ -278,6 +278,16 @@ describe('new Cookies(req, res, [options])', function () {
           .expect(shouldSetCookieWithoutAttribute('foo', 'maxAge'))
           .end(done)
       })
+
+      it('should not affect cookie deletion', function (done) {
+        request(createServer(setCookieHandler('foo', null, { maxAge: 86400000 })))
+          .get('/')
+          .expect(200)
+          .expect(shouldSetCookieCount(1))
+          .expect(shouldSetCookieToValue('foo', ''))
+          .expect(shouldSetCookieWithAttributeAndValue('foo', 'expires', 'Thu, 01 Jan 1970 00:00:00 GMT'))
+          .end(done)
+      })
     })
 
     describe('"overwrite" option', function () {

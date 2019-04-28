@@ -126,13 +126,16 @@ function Cookie(name, value, attrs) {
     throw new TypeError('argument value is invalid');
   }
 
-  value || (this.expires = new Date(0))
-
   this.name = name
   this.value = value || ""
 
   for (var name in attrs) {
     this[name] = attrs[name]
+  }
+
+  if (!this.value) {
+    this.expires = new Date(0)
+    this.maxAge = null
   }
 
   if (this.path && !fieldContentRegExp.test(this.path)) {
