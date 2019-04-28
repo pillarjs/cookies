@@ -530,6 +530,20 @@ describe('new Cookies(req, res, [options])', function () {
           .end(done)
         })
 
+        describe('when value is falsy', function () {
+          it('should delete additional .sig cookie', function (done) {
+            var opts = { keys: ['keyboard cat'] }
+            request(createServer(opts, setCookieHandler('foo', null, { signed: true })))
+              .get('/')
+              .expect(200)
+              .expect(shouldSetCookieCount(2))
+              .expect(shouldSetCookieToValue('foo', ''))
+              .expect(shouldSetCookieWithAttributeAndValue('foo', 'expires', 'Thu, 01 Jan 1970 00:00:00 GMT'))
+              .expect(shouldSetCookieWithAttributeAndValue('foo.sig', 'expires', 'Thu, 01 Jan 1970 00:00:00 GMT'))
+              .end(done)
+          })
+        })
+
         describe('with "path"', function () {
           it('should set additional .sig cookie with path', function (done) {
             var opts = { keys: ['keyboard cat'] }
