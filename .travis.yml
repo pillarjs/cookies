@@ -37,10 +37,16 @@ before_install:
       npm install --save-dev mocha@5.2.0
     fi
   - |
-    # istanbul for coverage
+    # nyc for coverage
     # - remove on Node.js < 0.10
+    # - use 10.x for Node.js < 4
+    # - use 11.x for Node.js < 6
     if [[ "$(cut -d. -f1 <<< "$TRAVIS_NODE_VERSION")" -eq 0 && "$(cut -d. -f2 <<< "$TRAVIS_NODE_VERSION")" -lt 10 ]]; then
-      npm rm --silent --save-dev istanbul
+      npm rm --silent --save-dev nyc
+    elif [[ "$(cut -d. -f1 <<< "$TRAVIS_NODE_VERSION")" -lt 4 ]]; then
+      npm install --save-dev nyc@10.3.2
+    elif [[ "$(cut -d. -f1 <<< "$TRAVIS_NODE_VERSION")" -lt 6 ]]; then
+      npm install --save-dev nyc@11.9.0
     fi
   - |
     # supertest for http calls
@@ -84,7 +90,7 @@ before_install:
 script:
   # Run test script
   - |
-    if npm -ps ls istanbul | grep -q istanbul; then
+    if npm -ps ls nyc | grep -q nyc; then
       npm run test-ci
     else
       npm test
@@ -97,7 +103,7 @@ script:
 after_script:
   - |
     # Upload coverage to coveralls
-    if [[ -f ./coverage/lcov.info ]]; then
+    if [[ -d .nyc_output ]]; then
       npm install --save-dev coveralls@2
-      coveralls < ./coverage/lcov.info
+      nyc report --reporter=text-lcov | coveralls
     fi
