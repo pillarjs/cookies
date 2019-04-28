@@ -222,6 +222,18 @@ describe('new Cookies(req, res, [options])', function () {
       .end(done)
     })
 
+    describe('when value is falsy', function () {
+      it('should delete cookie', function (done) {
+        request(createServer(setCookieHandler('foo', null)))
+          .get('/')
+          .expect(200)
+          .expect(shouldSetCookieCount(1))
+          .expect(shouldSetCookieToValue('foo', ''))
+          .expect(shouldSetCookieWithAttributeAndValue('foo', 'expires', 'Thu, 01 Jan 1970 00:00:00 GMT'))
+          .end(done)
+      })
+    })
+
     describe('"httpOnly" option', function () {
       it('should be set by default', function (done) {
         request(createServer(function (req, res, cookies) {
@@ -663,6 +675,13 @@ function parseSetCookie (header) {
   }
 
   return cookie
+}
+
+function setCookieHandler (name, value, options) {
+  return function (req, res, cookies) {
+    cookies.set(name, value, options)
+    res.end()
+  }
 }
 
 function shouldSetCookieCount (num) {
