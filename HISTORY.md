@@ -1,6 +1,7 @@
 unreleased
 ==========
 
+  * Fix check for default `secure` option behavior
   * deps: depd@~2.0.0
     - Replace internal `eval` usage with `Function` constructor
     - Use instance methods on `process` to check for listeners

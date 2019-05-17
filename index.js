@@ -94,8 +94,9 @@ Cookies.prototype.set = function(name, value, opts) {
     throw new Error('Cannot send secure cookie over unencrypted connection')
   }
 
-  cookie.secure = secure
-  if (opts && "secure" in opts) cookie.secure = opts.secure
+  cookie.secure = opts && opts.secure !== undefined
+    ? opts.secure
+    : secure
 
   if (opts && "secureProxy" in opts) {
     deprecate('"secureProxy" option; use "secure" option, provide "secure" to constructor if needed')

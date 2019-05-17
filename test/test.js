@@ -401,6 +401,45 @@ describe('new Cookies(req, res, [options])', function () {
           })
         })
       })
+
+      describe('when undefined', function () {
+        it('should set secure attribute on encrypted connection', function (done) {
+          var server = createSecureServer(setCookieHandler('foo', 'bar', { secure: undefined }))
+
+          request(server)
+            .get('/')
+            .ca(server.cert)
+            .expect(200)
+            .expect(shouldSetCookieWithAttribute('foo', 'Secure'))
+            .end(done)
+        })
+
+        describe('with "secure: undefined" constructor option', function () {
+          it('should not set secure attribute on unencrypted connection', function (done) {
+            var opts = { secure: undefined }
+
+            request(createServer(opts, setCookieHandler('foo', 'bar', { secure: undefined })))
+              .get('/')
+              .expect(200)
+              .expect(shouldSetCookieWithoutAttribute('foo', 'Secure'))
+              .end(done)
+          })
+        })
+
+        describe('with req.protocol === "https"', function () {
+          it('should set secure attribute on unencrypted connection', function (done) {
+            request(createServer(function (req, res, cookies) {
+              req.protocol = 'https'
+              cookies.set('foo', 'bar', { secure: undefined })
+              res.end()
+            }))
+              .get('/')
+              .expect(200)
+              .expect(shouldSetCookieWithAttribute('foo', 'Secure'))
+              .end(done)
+          })
+        })
+      })
     })
 
     describe('"secureProxy" option', function () {
