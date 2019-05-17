@@ -26,7 +26,7 @@ var fieldContentRegExp = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
  * RegExp to match Same-Site cookie attribute value.
  */
 
-var sameSiteRegExp = /^(?:lax|strict)$/i
+var SAME_SITE_REGEXP = /^(?:lax|none|strict)$/i
 
 function Cookies(request, response, options) {
   if (!(this instanceof Cookies)) return new Cookies(request, response, options)
@@ -146,7 +146,7 @@ function Cookie(name, value, attrs) {
     throw new TypeError('option domain is invalid');
   }
 
-  if (this.sameSite && this.sameSite !== true && !sameSiteRegExp.test(this.sameSite)) {
+  if (this.sameSite && this.sameSite !== true && !SAME_SITE_REGEXP.test(this.sameSite)) {
     throw new TypeError('option sameSite is invalid')
   }
 }

@@ -95,6 +95,13 @@ describe('new Cookie(name, value, [options])', function () {
         })
       })
 
+      describe('when set to "none"', function () {
+        it('should set "samesite=none" attribute in header', function () {
+          var cookie = new cookies.Cookie('foo', 'bar', { sameSite: 'none' })
+          assert.equal(cookie.toHeader(), 'foo=bar; path=/; samesite=none; httponly')
+        })
+      })
+
       describe('when set to "strict"', function () {
         it('should set "samesite=strict" attribute in header', function () {
           var cookie = new cookies.Cookie('foo', 'bar', { sameSite: 'strict' })
