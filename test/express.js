@@ -113,9 +113,12 @@ describeExpress('Express', function () {
       })
 
       request(app)
-      .get('/')
-      .expect('Set-Cookie', /foo=bar.*secure/i)
-      .expect(200, done)
+        .get('/')
+        .expect(shouldSetCookies([
+          { name: 'foo', value: 'bar', path: '/', httponly: true, secure: true },
+          { name: 'foo.sig', value: 'p5QVCZeqNBulWOhYipO0jqjrzz4', path: '/', httponly: true, secure: true }
+        ]))
+        .expect(200, done)
     })
 
     it('should set for proxy settings', function (done) {
@@ -130,13 +133,46 @@ describeExpress('Express', function () {
       })
 
       request(app)
-      .get('/')
-      .set('X-Forwarded-Proto', 'https')
-      .expect('Set-Cookie', /foo=bar.*secure/i)
-      .expect(200, done)
+        .get('/')
+        .set('X-Forwarded-Proto', 'https')
+        .expect(shouldSetCookies([
+          { name: 'foo', value: 'bar', path: '/', httponly: true, secure: true },
+          { name: 'foo.sig', value: 'p5QVCZeqNBulWOhYipO0jqjrzz4', path: '/', httponly: true, secure: true }
+        ]))
+        .expect(200, done)
     })
   })
 })
+
+function getCookies (res) {
+  var setCookies = res.headers['set-cookie'] || []
+  return setCookies.map(parseSetCookie)
+}
+
+function parseSetCookie (header) {
+  var match
+  var pairs = []
+  var pattern = /\s*([^=;]+)(?:=([^;]*);?|;|$)/g
+
+  while ((match = pattern.exec(header))) {
+    pairs.push({ name: match[1], value: match[2] })
+  }
+
+  var cookie = pairs.shift()
+
+  for (var i = 0; i < pairs.length; i++) {
+    match = pairs[i]
+    cookie[match.name.toLowerCase()] = (match.value || true)
+  }
+
+  return cookie
+}
+
+function shouldSetCookies (expected) {
+  return function (res) {
+    assert.deepEqual(getCookies(res), expected)
+  }
+}
 
 function tryRequire (name) {
   try {
