@@ -76,36 +76,28 @@ describe('new Cookies(req, res, [options])', function () {
 
   describe('.get(name, [options])', function () {
     it('should return value of cookie', function (done) {
-      request(createServer(function (req, res, cookies) {
-        res.end(String(cookies.get('foo')))
-      }))
+      request(createServer(getCookieHandler('foo')))
       .get('/')
       .set('Cookie', 'foo=bar')
       .expect(200, 'bar', done)
     })
 
     it('should work for cookie name with special characters', function (done) {
-      request(createServer(function (req, res, cookies) {
-        res.end(String(cookies.get('foo*(#bar)?.|$')))
-      }))
+      request(createServer(getCookieHandler('foo*(#bar)?.|$')))
       .get('/')
       .set('Cookie', 'foo*(#bar)?.|$=buzz')
       .expect(200, 'buzz', done)
     })
 
     it('should return undefined without cookie', function (done) {
-      request(createServer(function (req, res, cookies) {
-        res.end(String(cookies.get('fizz')))
-      }))
+      request(createServer(getCookieHandler('fizz')))
       .get('/')
       .set('Cookie', 'foo=bar')
       .expect(200, 'undefined', done)
     })
 
     it('should return undefined without header', function (done) {
-      request(createServer(function (req, res, cookies) {
-        res.end(String(cookies.get('foo')))
-      }))
+      request(createServer(getCookieHandler('foo')))
       .get('/')
       .expect(200, 'undefined', done)
     })
@@ -113,9 +105,7 @@ describe('new Cookies(req, res, [options])', function () {
     describe('"signed" option', function () {
       describe('when true', function () {
         it('should throw without .keys', function (done) {
-          request(createServer(function (req, res, cookies) {
-            res.end(String(cookies.get('foo', { signed: true })))
-          }))
+          request(createServer(getCookieHandler('foo', { signed: true })))
           .get('/')
           .set('Cookie', 'foo=bar; foo.sig=iW2fuCIzk9Cg_rqLT1CAqrtdWs8')
           .expect(500)
@@ -125,9 +115,7 @@ describe('new Cookies(req, res, [options])', function () {
 
         it('should return signed cookie value', function (done) {
           var opts = { keys: ['keyboard cat'] }
-          request(createServer(opts, function (req, res, cookies) {
-            res.end(String(cookies.get('foo', { signed: true })))
-          }))
+          request(createServer(opts, getCookieHandler('foo', { signed: true })))
           .get('/')
           .set('Cookie', 'foo=bar; foo.sig=iW2fuCIzk9Cg_rqLT1CAqrtdWs8')
           .expect(200, 'bar', done)
@@ -136,9 +124,7 @@ describe('new Cookies(req, res, [options])', function () {
         describe('when signature is invalid', function () {
           it('should return undefined', function (done) {
             var opts = { keys: ['keyboard cat'] }
-            request(createServer(opts, function (req, res, cookies) {
-              res.end(String(cookies.get('foo', { signed: true })))
-            }))
+            request(createServer(opts, getCookieHandler('foo', { signed: true })))
             .get('/')
             .set('Cookie', 'foo=bar; foo.sig=v5f380JakwVgx2H9B9nA6kJaZNg')
             .expect(200, 'undefined', done)
@@ -146,9 +132,7 @@ describe('new Cookies(req, res, [options])', function () {
 
           it('should delete signature cookie', function (done) {
             var opts = { keys: ['keyboard cat'] }
-            request(createServer(opts, function (req, res, cookies) {
-              res.end(String(cookies.get('foo', { signed: true })))
-            }))
+            request(createServer(opts, getCookieHandler('foo', { signed: true })))
             .get('/')
             .set('Cookie', 'foo=bar; foo.sig=v5f380JakwVgx2H9B9nA6kJaZNg')
             .expect(200)
@@ -162,9 +146,7 @@ describe('new Cookies(req, res, [options])', function () {
         describe('when signature matches old key', function () {
           it('should return signed value', function (done) {
             var opts = { keys: ['keyboard cat a', 'keyboard cat b'] }
-            request(createServer(opts, function (req, res, cookies) {
-              res.end(String(cookies.get('foo', { signed: true })))
-            }))
+            request(createServer(opts, getCookieHandler('foo', { signed: true })))
             .get('/')
             .set('Cookie', 'foo=bar; foo.sig=NzdRHeORj7MtAMhSsILYRsyVNI8')
             .expect(200, 'bar', done)
@@ -172,9 +154,7 @@ describe('new Cookies(req, res, [options])', function () {
 
           it('should set signature with new key', function (done) {
             var opts = { keys: ['keyboard cat a', 'keyboard cat b'] }
-            request(createServer(opts, function (req, res, cookies) {
-              res.end(String(cookies.get('foo', { signed: true })))
-            }))
+            request(createServer(opts, getCookieHandler('foo', { signed: true })))
             .get('/')
             .set('Cookie', 'foo=bar; foo.sig=NzdRHeORj7MtAMhSsILYRsyVNI8')
             .expect(200)
@@ -597,6 +577,12 @@ function getCookieForName (res, name) {
     if (cookies[i].name === name) {
       return cookies[i]
     }
+  }
+}
+
+function getCookieHandler (name, options) {
+  return function (req, res, cookies) {
+    res.end(String(cookies.get(name, options)))
   }
 }
 
