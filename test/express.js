@@ -28,10 +28,6 @@ describeExpress('Express', function () {
         // set a signed cookie
         .set( "signed", "bar", { signed: true } )
 
-        // set a cookie that will be overwritten
-        .set( "overwrite", "old-value", { signed: true } )
-        .set( "overwrite", "new-value", { overwrite: true, signed: true } )
-
       res.writeHead(302, {Location: "/"})
       res.end()
     })
@@ -39,14 +35,11 @@ describeExpress('Express', function () {
     app.get("/", function(req, res) {
       var unsigned = req.cookies.get( "unsigned" )
         , signed = req.cookies.get( "signed", { signed: true } )
-        , overwrite = req.cookies.get( "overwrite", { signed: true } )
 
       assert.equal( unsigned, "foo" )
       assert.equal( req.cookies.get( "unsigned.sig", { signed:false } ), undefined)
       assert.equal( signed, "bar" )
       assert.equal( req.cookies.get( "signed.sig", { signed: false } ), keys.sign('signed=bar') )
-      assert.equal( overwrite, "new-value" )
-      assert.equal( req.cookies.get( "overwrite.sig", { signed:false } ), keys.sign('overwrite=new-value') )
 
       res.send(
         "unsigned expected: foo\n" +
@@ -70,7 +63,7 @@ describeExpress('Express', function () {
       if (err) return done(err)
 
       header = res.headers['set-cookie']
-      assert.equal(header.length, 6)
+      assert.equal(header.length, 4)
       done()
     })
   })
@@ -80,6 +73,69 @@ describeExpress('Express', function () {
     .get('/')
     .set('Cookie', header.join(';'))
     .expect(200, done)
+  })
+
+  describe('when "overwrite: false"', function () {
+    it('should set second cookie with same name', function (done) {
+      var app = express()
+
+      app.set('env', 'test')
+      app.use(cookies())
+      app.get('/', function (req, res) {
+        res.cookies.set('foo', 'bar')
+        res.cookies.set('foo', 'fizz', { overwrite: false })
+        res.end()
+      })
+
+      request(app)
+        .get('/')
+        .expect(shouldSetCookies([
+          { name: 'foo', value: 'bar', path: '/', httponly: true },
+          { name: 'foo', value: 'fizz', path: '/', httponly: true }
+        ]))
+        .expect(200, done)
+    })
+  })
+
+  describe('when "overwrite: true"', function () {
+    it('should replace previously set value', function (done) {
+      var app = express()
+
+      app.set('env', 'test')
+      app.use(cookies())
+      app.get('/', function (req, res, next) {
+        res.cookies.set('foo', 'bar')
+        res.cookies.set('foo', 'fizz', { overwrite: true })
+        res.end()
+      })
+
+      request(app)
+        .get('/')
+        .expect(shouldSetCookies([
+          { name: 'foo', value: 'fizz', path: '/', httponly: true }
+        ]))
+        .expect(200, done)
+    })
+
+    it('should set signature correctly', function (done) {
+      var app = express()
+
+      app.set('env', 'test')
+      app.use(cookies(keys))
+      app.get('/', function (req, res, next) {
+        res.cookies.set('foo', 'bar')
+        res.cookies.set('foo', 'fizz', { overwrite: true })
+        res.end()
+      })
+
+      request(app)
+        .get('/')
+        .expect(shouldSetCookies([
+          { name: 'foo', value: 'fizz', path: '/', httponly: true },
+          { name: 'foo.sig', value: 'hVIYdxZSelh3gIK5wQxzrqoIndU', path: '/', httponly: true }
+        ]))
+        .expect(200, done)
+    })
   })
 
   describe('when "secure: true"', function () {

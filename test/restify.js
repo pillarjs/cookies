@@ -49,6 +49,72 @@ describeRestify('Restify', function () {
     .set('Cookie', header.join(';'))
     .expect(200, done)
   })
+
+  describe('when "overwrite: false"', function () {
+    it('should set second cookie with same name', function (done) {
+      var server = restify.createServer()
+
+      server.get('/', function (req, res) {
+        var cookies = new Cookies(req, res)
+
+        cookies.set('foo', 'bar')
+        cookies.set('foo', 'fizz', { overwrite: false })
+
+        res.send(200)
+      })
+
+      request(server)
+        .get('/')
+        .expect(shouldSetCookies([
+          { name: 'foo', value: 'bar', path: '/', httponly: true },
+          { name: 'foo', value: 'fizz', path: '/', httponly: true }
+        ]))
+        .expect(200, done)
+    })
+  })
+
+  describe('when "overwrite: true"', function () {
+    it('should replace previously set value', function (done) {
+      var server = restify.createServer()
+
+      server.get('/', function (req, res) {
+        var cookies = new Cookies(req, res)
+
+        cookies.set('foo', 'bar')
+        cookies.set('foo', 'fizz', { overwrite: true })
+
+        res.send(200)
+      })
+
+      request(server)
+        .get('/')
+        .expect(shouldSetCookies([
+          { name: 'foo', value: 'fizz', path: '/', httponly: true }
+        ]))
+        .expect(200, done)
+    })
+
+    it('should set signature correctly', function (done) {
+      var server = restify.createServer()
+
+      server.get('/', function (req, res) {
+        var cookies = new Cookies(req, res, keys)
+
+        cookies.set('foo', 'bar')
+        cookies.set('foo', 'fizz', { overwrite: true })
+
+        res.send(200)
+      })
+
+      request(server)
+        .get('/')
+        .expect(shouldSetCookies([
+          { name: 'foo', value: 'fizz', path: '/', httponly: true },
+          { name: 'foo.sig', value: 'hVIYdxZSelh3gIK5wQxzrqoIndU', path: '/', httponly: true }
+        ]))
+        .expect(200, done)
+    })
+  })
 })
 
 function setCookies(req, res) {
@@ -56,31 +122,54 @@ function setCookies(req, res) {
   cookies
     .set('unsigned', 'foo', { signed:false, httpOnly: false })
     .set('signed', 'bar', { signed: true })
-    .set('overwrite', 'old-value', { signed: true })
-    .set('overwrite', 'new-value', { overwrite: true, signed: true })
 }
 
 function assertCookies(req, res) {
   var cookies = new Cookies(req, res, keys)
   var unsigned = cookies.get('unsigned'),
-    signed = cookies.get('signed', { signed: true }),
-    overwrite = cookies.get('overwrite', { signed: true })
+    signed = cookies.get('signed', { signed: true })
 
   assert.equal(unsigned, 'foo')
   assert.equal(cookies.get('unsigned.sig', { signed:false }), undefined)
   assert.equal(signed, 'bar')
   assert.equal(cookies.get('signed.sig', { signed: false }), keys.sign('signed=bar'))
-  assert.equal(overwrite, 'new-value')
-  assert.equal(cookies.get('overwrite.sig', { signed:false }), keys.sign('overwrite=new-value'))
 }
 
 function assertSetCookieHeader(header) {
-  assert.equal(header.length, 5)
+  assert.equal(header.length, 3)
   assert.equal(header[0], 'unsigned=foo; path=/')
   assert.equal(header[1], 'signed=bar; path=/; httponly')
   assert.ok(/^signed\.sig=.{27}; path=\/; httponly$/.test(header[2]))
-  assert.equal(header[3], 'overwrite=new-value; path=/; httponly')
-  assert.ok(/^overwrite\.sig=.{27}; path=\/; httponly$/.test(header[4]))
+}
+
+function getCookies (res) {
+  var setCookies = res.headers['set-cookie'] || []
+  return setCookies.map(parseSetCookie)
+}
+
+function parseSetCookie (header) {
+  var match
+  var pairs = []
+  var pattern = /\s*([^=;]+)(?:=([^;]*);?|;|$)/g
+
+  while ((match = pattern.exec(header))) {
+    pairs.push({ name: match[1], value: match[2] })
+  }
+
+  var cookie = pairs.shift()
+
+  for (var i = 0; i < pairs.length; i++) {
+    match = pairs[i]
+    cookie[match.name.toLowerCase()] = (match.value || true)
+  }
+
+  return cookie
+}
+
+function shouldSetCookies (expected) {
+  return function (res) {
+    assert.deepEqual(getCookies(res), expected)
+  }
 }
 
 function tryRequire (name) {
