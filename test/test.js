@@ -190,10 +190,7 @@ describe('new Cookies(req, res, [options])', function () {
 
   describe('.set(name, value, [options])', function () {
     it('should set cookie', function (done) {
-      request(createServer(function (req, res, cookies) {
-        cookies.set('foo', 'bar')
-        res.end()
-      }))
+      request(createServer(setCookieHandler('foo', 'bar')))
       .get('/')
       .expect(200)
       .expect(shouldSetCookieToValue('foo', 'bar'))
@@ -201,10 +198,7 @@ describe('new Cookies(req, res, [options])', function () {
     })
 
     it('should work for cookie name with special characters', function (done) {
-      request(createServer(function (req, res, cookies) {
-        cookies.set('foo*(#bar)?.|$', 'buzz')
-        res.end()
-      }))
+      request(createServer(setCookieHandler('foo*(#bar)?.|$', 'buzz')))
       .get('/')
       .expect(200)
       .expect(shouldSetCookieToValue('foo*(#bar)?.|$', 'buzz'))
@@ -212,10 +206,7 @@ describe('new Cookies(req, res, [options])', function () {
     })
 
     it('should work for cookie value with special characters', function (done) {
-      request(createServer(function (req, res, cookies) {
-        cookies.set('foo', '*(#bar)?.|$')
-        res.end()
-      }))
+      request(createServer(setCookieHandler('foo', '*(#bar)?.|$')))
       .get('/')
       .expect(200)
       .expect(shouldSetCookieToValue('foo', '*(#bar)?.|$'))
@@ -236,10 +227,7 @@ describe('new Cookies(req, res, [options])', function () {
 
     describe('"httpOnly" option', function () {
       it('should be set by default', function (done) {
-        request(createServer(function (req, res, cookies) {
-          cookies.set('foo', 'bar')
-          res.end()
-        }))
+        request(createServer(setCookieHandler('foo', 'bar')))
         .get('/')
         .expect(200)
         .expect(shouldSetCookieWithAttribute('foo', 'httpOnly'))
@@ -247,10 +235,7 @@ describe('new Cookies(req, res, [options])', function () {
       })
 
       it('should set to true', function (done) {
-        request(createServer(function (req, res, cookies) {
-          cookies.set('foo', 'bar', { httpOnly: true })
-          res.end()
-        }))
+        request(createServer(setCookieHandler('foo', 'bar', { httpOnly: true })))
         .get('/')
         .expect(200)
         .expect(shouldSetCookieWithAttribute('foo', 'httpOnly'))
@@ -258,10 +243,7 @@ describe('new Cookies(req, res, [options])', function () {
       })
 
       it('should set to false', function (done) {
-        request(createServer(function (req, res, cookies) {
-          cookies.set('foo', 'bar', { httpOnly: false })
-          res.end()
-        }))
+        request(createServer(setCookieHandler('foo', 'bar', { httpOnly: false })))
         .get('/')
         .expect(200)
         .expect(shouldSetCookieWithoutAttribute('foo', 'httpOnly'))
@@ -271,10 +253,7 @@ describe('new Cookies(req, res, [options])', function () {
 
     describe('"domain" option', function () {
       it('should not be set by default', function (done) {
-        request(createServer(function (req, res, cookies) {
-          cookies.set('foo', 'bar')
-          res.end()
-        }))
+        request(createServer(setCookieHandler('foo', 'bar')))
         .get('/')
         .expect(200)
         .expect(shouldSetCookieWithoutAttribute('foo', 'domain'))
@@ -282,10 +261,7 @@ describe('new Cookies(req, res, [options])', function () {
       })
 
       it('should set to custom value', function (done) {
-        request(createServer(function (req, res, cookies) {
-          cookies.set('foo', 'bar', { domain: 'foo.local' })
-          res.end()
-        }))
+        request(createServer(setCookieHandler('foo', 'bar', { domain: 'foo.local' })))
         .get('/')
         .expect(200)
         .expect(shouldSetCookieWithAttributeAndValue('foo', 'domain', 'foo.local'))
@@ -293,10 +269,7 @@ describe('new Cookies(req, res, [options])', function () {
       })
 
       it('should reject invalid value', function (done) {
-        request(createServer(function (req, res, cookies) {
-          cookies.set('foo', 'bar', { domain: 'foo\nbar' })
-          res.end()
-        }))
+        request(createServer(setCookieHandler('foo', 'bar', { domain: 'foo\nbar' })))
         .get('/')
         .expect(500, 'TypeError: option domain is invalid', done)
       })
@@ -305,10 +278,7 @@ describe('new Cookies(req, res, [options])', function () {
     describe('"maxAge" option', function () {
       it('should set the "expires" attribute', function (done) {
         var maxAge = 86400000
-        request(createServer(function (req, res, cookies) {
-          cookies.set('foo', 'bar', { maxAge: maxAge })
-          res.end()
-        }))
+        request(createServer(setCookieHandler('foo', 'bar', { maxAge: maxAge })))
         .get('/')
         .expect(200)
         .expect(shouldSetCookieWithAttribute('foo', 'expires'))
@@ -321,10 +291,7 @@ describe('new Cookies(req, res, [options])', function () {
       })
 
       it('should not set the "maxAge" attribute', function (done) {
-        request(createServer(function (req, res, cookies) {
-          cookies.set('foo', 'bar', { maxAge: 86400000 })
-          res.end()
-        }))
+        request(createServer(setCookieHandler('foo', 'bar', { maxAge: 86400000 })))
         .get('/')
         .expect(200)
         .expect(shouldSetCookieWithAttribute('foo', 'expires'))
@@ -377,10 +344,7 @@ describe('new Cookies(req, res, [options])', function () {
 
     describe('"path" option', function () {
       it('should default to "/"', function (done) {
-        request(createServer(function (req, res, cookies) {
-          cookies.set('foo', 'bar')
-          res.end()
-        }))
+        request(createServer(setCookieHandler('foo', 'bar')))
         .get('/')
         .expect(200)
         .expect(shouldSetCookieWithAttributeAndValue('foo', 'path', '/'))
@@ -388,10 +352,7 @@ describe('new Cookies(req, res, [options])', function () {
       })
 
       it('should set to custom value', function (done) {
-        request(createServer(function (req, res, cookies) {
-          cookies.set('foo', 'bar', { path: '/admin' })
-          res.end()
-        }))
+        request(createServer(setCookieHandler('foo', 'bar', { path: '/admin' })))
         .get('/')
         .expect(200)
         .expect(shouldSetCookieWithAttributeAndValue('foo', 'path', '/admin'))
@@ -399,10 +360,7 @@ describe('new Cookies(req, res, [options])', function () {
       })
 
       it('should set to ""', function (done) {
-        request(createServer(function (req, res, cookies) {
-          cookies.set('foo', 'bar', { path: '' })
-          res.end()
-        }))
+        request(createServer(setCookieHandler('foo', 'bar', { path: '' })))
         .get('/')
         .expect(200)
         .expect(shouldSetCookieWithoutAttribute('foo', 'path'))
@@ -410,10 +368,7 @@ describe('new Cookies(req, res, [options])', function () {
       })
 
       it('should reject invalid value', function (done) {
-        request(createServer(function (req, res, cookies) {
-          cookies.set('foo', 'bar', { path: 'foo\nbar' })
-          res.end()
-        }))
+        request(createServer(setCookieHandler('foo', 'bar', { path: 'foo\nbar' })))
         .get('/')
         .expect(500, 'TypeError: option path is invalid', done)
       })
@@ -422,10 +377,7 @@ describe('new Cookies(req, res, [options])', function () {
     describe('"secure" option', function () {
       describe('when true', function () {
         it('should throw on unencrypted connection', function (done) {
-          request(createServer(function (req, res, cookies) {
-            cookies.set('foo', 'bar', { secure: true })
-            res.end()
-          }))
+          request(createServer(setCookieHandler('foo', 'bar', { secure: true })))
           .get('/')
           .expect(500)
           .expect('Error: Cannot send secure cookie over unencrypted connection')
@@ -433,10 +385,7 @@ describe('new Cookies(req, res, [options])', function () {
         })
 
         it('should set secure attribute on encrypted connection', function (done) {
-          var server = createSecureServer(function (req, res, cookies) {
-            cookies.set('foo', 'bar', { secure: true })
-            res.end()
-          })
+          var server = createSecureServer(setCookieHandler('foo', 'bar', { secure: true }))
 
           request(server)
           .get('/')
@@ -449,10 +398,8 @@ describe('new Cookies(req, res, [options])', function () {
         describe('with "secure: true" constructor option', function () {
           it('should set secure attribute on unencrypted connection', function (done) {
             var opts = { secure: true }
-            request(createServer(opts, function (req, res, cookies) {
-              cookies.set('foo', 'bar', { secure: true })
-              res.end()
-            }))
+
+            request(createServer(opts, setCookieHandler('foo', 'bar', { secure: true })))
             .get('/')
             .expect(200)
             .expect(shouldSetCookieWithAttribute('foo', 'Secure'))
@@ -478,10 +425,7 @@ describe('new Cookies(req, res, [options])', function () {
 
     describe('"secureProxy" option', function () {
       it('should set secure attribute over http', function (done) {
-        request(createServer(function (req, res, cookies) {
-          cookies.set('foo', 'bar', { secureProxy: true })
-          res.end()
-        }))
+        request(createServer(setCookieHandler('foo', 'bar', { secureProxy: true })))
         .get('/')
         .expect(200)
         .expect(shouldSetCookieWithAttribute('foo', 'Secure'))
@@ -492,10 +436,7 @@ describe('new Cookies(req, res, [options])', function () {
     describe('"signed" option', function () {
       describe('when true', function () {
         it('should throw without .keys', function (done) {
-          request(createServer(function (req, res, cookies) {
-            cookies.set('foo', 'bar', { signed: true })
-            res.end()
-          }))
+          request(createServer(setCookieHandler('foo', 'bar', { signed: true })))
           .get('/')
           .expect(500)
           .expect('Error: .keys required for signed cookies')
@@ -504,10 +445,8 @@ describe('new Cookies(req, res, [options])', function () {
 
         it('should set additional .sig cookie', function (done) {
           var opts = { keys: ['keyboard cat'] }
-          request(createServer(opts, function (req, res, cookies) {
-            cookies.set('foo', 'bar', { signed: true })
-            res.end()
-          }))
+
+          request(createServer(opts, setCookieHandler('foo', 'bar', { signed: true })))
           .get('/')
           .expect(200)
           .expect(shouldSetCookieCount(2))
@@ -518,10 +457,8 @@ describe('new Cookies(req, res, [options])', function () {
 
         it('should use first key for signature', function (done) {
           var opts = { keys: ['keyboard cat a', 'keyboard cat b'] }
-          request(createServer(opts, function (req, res, cookies) {
-            cookies.set('foo', 'bar', { signed: true })
-            res.end()
-          }))
+
+          request(createServer(opts, setCookieHandler('foo', 'bar', { signed: true })))
           .get('/')
           .expect(200)
           .expect(shouldSetCookieCount(2))
@@ -547,10 +484,8 @@ describe('new Cookies(req, res, [options])', function () {
         describe('with "path"', function () {
           it('should set additional .sig cookie with path', function (done) {
             var opts = { keys: ['keyboard cat'] }
-            request(createServer(opts, function (req, res, cookies) {
-              cookies.set('foo', 'bar', { signed: true, path: '/admin' })
-              res.end()
-            }))
+
+            request(createServer(opts, setCookieHandler('foo', 'bar', { signed: true, path: '/admin' })))
             .get('/')
             .expect(200)
             .expect(shouldSetCookieCount(2))
@@ -580,10 +515,8 @@ describe('new Cookies(req, res, [options])', function () {
         describe('with "secureProxy"', function () {
           it('should set additional .sig cookie with secure', function (done) {
             var opts = { keys: ['keyboard cat'] }
-            request(createServer(opts, function (req, res, cookies) {
-              cookies.set('foo', 'bar', { signed: true, secureProxy: true })
-              res.end()
-            }))
+
+            request(createServer(opts, setCookieHandler('foo', 'bar', { signed: true, secureProxy: true })))
             .get('/')
             .expect(200)
             .expect(shouldSetCookieCount(2))
