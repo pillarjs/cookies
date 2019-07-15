@@ -62,7 +62,14 @@ Cookies.prototype.get = function(name, opts) {
   match = header.match(getPattern(name))
   if (!match) return
 
-  value = match[1]
+  /*
+   * https://tools.ietf.org/html/rfc6265#section-4.1.1
+   *
+   * To maximize compatibility with user agents, servers that wish to
+   * store arbitrary data in a cookie-value SHOULD encode that data, for
+   * example, using Base64 [RFC4648].
+   */
+  value = decodeURIComponent(match[1])
   if (!opts || !signed) return value
 
   remote = this.get(sigName)

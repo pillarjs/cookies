@@ -80,8 +80,8 @@ describe('new Cookies(req, res, [options])', function () {
         res.end(String(cookies.get('foo')))
       }))
       .get('/')
-      .set('Cookie', 'foo=bar')
-      .expect(200, 'bar', done)
+      .set('Cookie', 'foo=bar%3D')
+      .expect(200, 'bar=', done)
     })
 
     it('should work for cookie name with special characters', function (done) {
