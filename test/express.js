@@ -9,70 +9,77 @@ var express = tryRequire('express')
 var describeExpress = express ? describe : describe.skip
 
 describeExpress('Express', function () {
-  var server
-  var header
-
-  before(function (done) {
+  it('should set a cookie on the response', function (done) {
     var app = express()
 
-    app.use( cookies( keys ) )
-
-    app.get( "/set", function(req, res) {
-      res.cookies
-        // set a regular cookie
-        .set( "unsigned", "foo", { signed:false, httpOnly: false } )
-
-        // set an empty cookie
-        .set( "empty", "", { signed: false, httpOnly: false } )
-
-        // set a signed cookie
-        .set( "signed", "bar", { signed: true } )
-
-      res.writeHead(302, {Location: "/"})
+    app.set('env', 'test')
+    app.use(cookies())
+    app.get('/', function (req, res) {
+      res.cookies.set('foo', 'bar')
       res.end()
     })
 
-    app.get("/", function(req, res) {
-      var unsigned = req.cookies.get( "unsigned" )
-        , signed = req.cookies.get( "signed", { signed: true } )
+    request(app)
+      .get('/')
+      .expect(shouldSetCookies([
+        { name: 'foo', value: 'bar', path: '/', httponly: true }
+      ]))
+      .expect(200, done)
+  })
 
-      assert.equal( unsigned, "foo" )
-      assert.equal( req.cookies.get( "unsigned.sig", { signed:false } ), undefined)
-      assert.equal( signed, "bar" )
-      assert.equal( req.cookies.get( "signed.sig", { signed: false } ), keys.sign('signed=bar') )
+  it('should get a cookie from the request', function (done) {
+    var app = express()
 
-      res.send(
-        "unsigned expected: foo\n" +
-        "unsigned actual: " + unsigned + "\n\n" +
-        "signed expected: bar\n" +
-        "signed actual: " + signed + "\n\n"
-      )
+    app.set('env', 'test')
+    app.use(cookies())
+    app.get('/', function (req, res) {
+      res.json({ foo: String(res.cookies.get('foo')) })
     })
 
-    server = app.listen(done)
+    request(app)
+      .get('/')
+      .set('cookie', 'foo=bar')
+      .expect(200, { foo: 'bar' }, done)
   })
 
-  after(function (done) {
-    server.close(done)
-  })
+  describe('with multiple cookies', function () {
+    it('should set all cookies on the response', function (done) {
+      var app = express()
 
-  it('should set cookies', function (done) {
-    request(server)
-    .get('/set')
-    .expect(302, function (err, res) {
-      if (err) return done(err)
+      app.set('env', 'test')
+      app.use(cookies())
+      app.get('/', function (req, res) {
+        res.cookies.set('foo', 'bar')
+        res.cookies.set('fizz', 'buzz')
+        res.end()
+      })
 
-      header = res.headers['set-cookie']
-      assert.equal(header.length, 4)
-      done()
+      request(app)
+        .get('/')
+        .expect(shouldSetCookies([
+          { name: 'foo', value: 'bar', path: '/', httponly: true },
+          { name: 'fizz', value: 'buzz', path: '/', httponly: true }
+        ]))
+        .expect(200, done)
     })
-  })
 
-  it('should get cookies', function (done) {
-    request(server)
-    .get('/')
-    .set('Cookie', header.join(';'))
-    .expect(200, done)
+    it('should get each cookie from the request', function (done) {
+      var app = express()
+
+      app.set('env', 'test')
+      app.use(cookies())
+      app.get('/', function (req, res) {
+        res.json({
+          fizz: String(res.cookies.get('fizz')),
+          foo: String(res.cookies.get('foo'))
+        })
+      })
+
+      request(app)
+        .get('/')
+        .set('cookie', 'foo=bar; fizz=buzz')
+        .expect(200, { foo: 'bar', fizz: 'buzz' }, done)
+    })
   })
 
   describe('when "overwrite: false"', function () {

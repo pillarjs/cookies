@@ -8,46 +8,79 @@ var restify = tryRequire('restify')
 var describeRestify = restify ? describe : describe.skip
 
 describeRestify('Restify', function () {
-  var header
-  var server
+  it('should set a cookie on the response', function (done) {
+    var server = restify.createServer()
 
-  before(function (done) {
-    server = restify.createServer()
+    server.get('/', function (req, res) {
+      var cookies = new Cookies(req, res)
 
-    server.get('/set', function (req, res) {
-      setCookies(req, res)
-      res.json({ status : 'ok'})
-    })
+      cookies.set('foo', 'bar')
 
-    server.get('/get', function (req, res) {
-      assertCookies(req, res)
       res.send(200)
     })
 
-    server.listen(done)
-  })
-
-  after(function (done) {
-    server.close(done)
-  })
-
-  it('should set cookies', function (done) {
     request(server)
-    .get('/set')
-    .expect(200, function (err, res) {
-      if (err) return done(err)
+      .get('/')
+      .expect(shouldSetCookies([
+        { name: 'foo', value: 'bar', path: '/', httponly: true }
+      ]))
+      .expect(200, done)
+  })
 
-      header = res.headers['set-cookie']
-      assertSetCookieHeader(header)
-      done()
+  it('should get a cookie from the request', function (done) {
+    var server = restify.createServer()
+
+    server.get('/', function (req, res) {
+      var cookies = new Cookies(req, res)
+
+      res.send({ foo: String(cookies.get('foo')) })
     })
+
+    request(server)
+      .get('/')
+      .set('cookie', 'foo=bar')
+      .expect(200, { foo: 'bar' }, done)
   })
 
-  it('should get cookies', function (done) {
-    request(server)
-    .get('/get')
-    .set('Cookie', header.join(';'))
-    .expect(200, done)
+  describe('with multiple cookies', function () {
+    it('should set all cookies on the response', function (done) {
+      var server = restify.createServer()
+
+      server.get('/', function (req, res) {
+        var cookies = new Cookies(req, res)
+
+        cookies.set('foo', 'bar')
+        cookies.set('fizz', 'buzz')
+
+        res.send(200)
+      })
+
+      request(server)
+        .get('/')
+        .expect(shouldSetCookies([
+          { name: 'foo', value: 'bar', path: '/', httponly: true },
+          { name: 'fizz', value: 'buzz', path: '/', httponly: true }
+        ]))
+        .expect(200, done)
+    })
+
+    it('should get each cookie from the request', function (done) {
+      var server = restify.createServer()
+
+      server.get('/', function (req, res) {
+        var cookies = new Cookies(req, res)
+
+        res.send({
+          fizz: String(cookies.get('fizz')),
+          foo: String(cookies.get('foo'))
+        })
+      })
+
+      request(server)
+        .get('/')
+        .set('cookie', 'foo=bar; fizz=buzz')
+        .expect(200, { foo: 'bar', fizz: 'buzz' }, done)
+    })
   })
 
   describe('when "overwrite: false"', function () {
@@ -116,31 +149,6 @@ describeRestify('Restify', function () {
     })
   })
 })
-
-function setCookies(req, res) {
-  var cookies = new Cookies(req, res, keys)
-  cookies
-    .set('unsigned', 'foo', { signed:false, httpOnly: false })
-    .set('signed', 'bar', { signed: true })
-}
-
-function assertCookies(req, res) {
-  var cookies = new Cookies(req, res, keys)
-  var unsigned = cookies.get('unsigned'),
-    signed = cookies.get('signed', { signed: true })
-
-  assert.equal(unsigned, 'foo')
-  assert.equal(cookies.get('unsigned.sig', { signed:false }), undefined)
-  assert.equal(signed, 'bar')
-  assert.equal(cookies.get('signed.sig', { signed: false }), keys.sign('signed=bar'))
-}
-
-function assertSetCookieHeader(header) {
-  assert.equal(header.length, 3)
-  assert.equal(header[0], 'unsigned=foo; path=/')
-  assert.equal(header[1], 'signed=bar; path=/; httponly')
-  assert.ok(/^signed\.sig=.{27}; path=\/; httponly$/.test(header[2]))
-}
 
 function getCookies (res) {
   var setCookies = res.headers['set-cookie'] || []
