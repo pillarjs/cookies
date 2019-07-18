@@ -157,8 +157,8 @@ describeExpress('Express', function () {
       })
 
       request(app)
-      .get('/')
-      .expect(500, /Cannot send secure cookie over unencrypted connection/, done)
+        .get('/')
+        .expect(500, /Cannot send secure cookie over unencrypted connection/, done)
     })
 
     it('should set for secure connection', function (done) {
