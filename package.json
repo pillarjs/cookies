@@ -17,7 +17,7 @@
     "express": "4.16.4",
     "mocha": "6.1.4",
     "nyc": "14.0.0",
-    "restify": "6.4.0",
+    "restify": "7.7.0",
     "supertest": "4.0.2"
   },
   "files": [
