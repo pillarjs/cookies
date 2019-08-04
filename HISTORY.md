@@ -1,3 +1,10 @@
+unreleased
+==========
+
+  * deps: depd@~2.0.0
+    - Replace internal `eval` usage with `Function` constructor
+    - Use instance methods on `process` to check for listeners
+
 0.7.3 / 2018-11-04
 ==================
 
