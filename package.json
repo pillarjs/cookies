@@ -10,7 +10,7 @@
   "repository": "pillarjs/cookies",
   "dependencies": {
     "depd": "~2.0.0",
-    "keygrip": "~1.0.3"
+    "keygrip": "~1.1.0"
   },
   "devDependencies": {
     "eslint": "4.19.1",
