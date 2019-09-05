@@ -51,37 +51,44 @@ function Cookies(request, response, options) {
   }
 }
 
+Cookies.prototype.get = function(name, opts) {
+  var all = this.getAll(name, opts)
+  if (all.length < 1) return
+  return all[0]
+}
+
 Cookies.prototype.getAll = function(name, opts) {
   var sigName = name + ".sig"
-    , header, matches, match, value, remotes, data, index, pattern, globalPattern
+    , header, remotes, matches, pattern, match, value, index, data
     , signed = opts && opts.signed !== undefined ? opts.signed : !!this.keys
     , values = []
 
   header = this.request.headers["cookie"]
-  if (!header) return
+  if (!header) return []
 
-  pattern = getPattern(name);
-  globalPattern = getPattern(name, { global: true });
+  if (opts && signed) {
+    if (!this.keys) throw new Error('.keys required for signed cookies');
+    remotes = this.getAll(sigName)
+    if (remotes.length === 0) return [];
+  }
 
-  matches = header.match(globalPattern);
+  matches = header.match(getPattern(name, { global: true }));
+  if(!matches) return []
+
+  pattern = getPattern(name)
   for (var i = 0; i < matches.length; i++) {
     match = matches[i].match(pattern)
     value = match[1]
 
     if (!opts || !signed) {
-      values.push(match[1])
-      continue;
+      values.push(value)
+      continue
     }
 
-    remotes = this.getAll(sigName)
-    if (remotes.length === 0) continue;
-
+    index = -1
     data = name + "=" + value
-    if (!this.keys) throw new Error('.keys required for signed cookies');
-
-    for (var j = 0; j < remotes.length; j++) {
+    for (var j = 0; index < 0 && j < remotes.length; j++) {
       index = this.keys.index(data, remotes[j])
-      if (index > -1) break
     }
 
     if (index < 0) {
@@ -92,37 +99,8 @@ Cookies.prototype.getAll = function(name, opts) {
     }
   }
 
-  return values;
+  return values
 }
-
-Cookies.prototype.get = function(name, opts) {
-  var sigName = name + ".sig"
-    , header, match, value, remote, data, index
-    , signed = opts && opts.signed !== undefined ? opts.signed : !!this.keys
-
-  header = this.request.headers["cookie"]
-  if (!header) return
-
-  match = header.match(getPattern(name))
-  if (!match) return
-
-  value = match[1]
-  if (!opts || !signed) return value
-
-  remote = this.get(sigName)
-  if (!remote) return
-
-  data = name + "=" + value
-  if (!this.keys) throw new Error('.keys required for signed cookies');
-  index = this.keys.index(data, remote)
-
-  if (index < 0) {
-    this.set(sigName, null, {path: "/", signed: false })
-  } else {
-    index && this.set(sigName, this.keys.sign(data), { signed: false })
-    return value
-  }
-};
 
 Cookies.prototype.set = function(name, value, opts) {
   var res = this.response

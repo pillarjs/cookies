@@ -110,15 +110,6 @@ describe('new Cookies(req, res, [options])', function () {
       .expect(200, 'undefined', done)
     })
 
-    it('should work for multiple cookies with the same name', function (done) {
-      request(createServer(function (req, res, cookies) {
-        res.end(String(cookies.getAll('foo')))
-      }))
-      .get('/')
-      .set('Cookie', 'foo=baz; foo=bar')
-      .expect(200, 'baz,bar', done)
-    })
-
     describe('"signed" option', function () {
       describe('when true', function () {
         it('should throw without .keys', function (done) {
@@ -140,26 +131,6 @@ describe('new Cookies(req, res, [options])', function () {
           .get('/')
           .set('Cookie', 'foo=bar; foo.sig=iW2fuCIzk9Cg_rqLT1CAqrtdWs8')
           .expect(200, 'bar', done)
-        })
-
-        it('should work for multiple signed cookies with the same name', function (done) {
-          var opts = { keys: ['keyboard cat'] }
-          request(createServer(opts, function (req, res, cookies) {
-            res.end(String(cookies.getAll('foo', { signed: true })))
-          }))
-          .get('/')
-          .set('Cookie', 'foo=bar; foo=baz; foo.sig=iW2fuCIzk9Cg_rqLT1CAqrtdWs8; foo.sig=ptOkbbiPiGfLWRzz1yXP3XqaW4E')
-          .expect(200, 'bar,baz', done)
-        })
-
-        it('when one signature is invalid for cookies with same name', function (done) {
-          var opts = { keys: ['keyboard cat'] }
-          request(createServer(opts, function (req, res, cookies) {
-            res.end(String(cookies.getAll('foo', { signed: true })))
-          }))
-          .get('/')
-          .set('Cookie', 'foo=bar; foo=baz; foo.sig=v5f380JakwVgx2H9B9nA6kJaZNg; foo.sig=ptOkbbiPiGfLWRzz1yXP3XqaW4E')
-          .expect(200, 'baz', done)
         })
 
         describe('when signature is invalid', function () {
@@ -210,6 +181,75 @@ describe('new Cookies(req, res, [options])', function () {
             .expect('bar')
             .expect(shouldSetCookieCount(1))
             .expect(shouldSetCookieToValue('foo.sig', 'tecF04p5ua6TnfYxUTDskgWSKJE'))
+            .end(done)
+          })
+        })
+      })
+    })
+  })
+
+  describe('.getAll(name, [options])', function() {
+    it('should return values of cookies', function (done) {
+      request(createServer(function (req, res, cookies) {
+        res.end(String(cookies.getAll('foo')))
+      }))
+      .get('/')
+      .set('Cookie', 'foo=baz; foo=bar')
+      .expect(200, 'baz,bar', done)
+    })
+
+    it('should return empty array without cookie', function (done) {
+      request(createServer(function (req, res, cookies) {
+        res.end(String(cookies.getAll('fizz').length))
+      }))
+      .get('/')
+      .set('Cookie', 'foo=bar')
+      .expect(200, '0', done)
+    })
+
+    it('should return empty array without header', function (done) {
+      request(createServer(function (req, res, cookies) {
+        res.end(String(cookies.getAll('foo').length))
+      }))
+      .get('/')
+      .expect(200, '0', done)
+    })
+
+    describe('"signed" option', function () {
+      describe('when true', function () {
+        it('should return signed cookie values', function (done) {
+          var opts = { keys: ['keyboard cat'] }
+          request(createServer(opts, function (req, res, cookies) {
+            res.end(String(cookies.getAll('foo', { signed: true })))
+          }))
+          .get('/')
+          .set('Cookie', 'foo=bar; foo=baz; foo.sig=iW2fuCIzk9Cg_rqLT1CAqrtdWs8; foo.sig=ptOkbbiPiGfLWRzz1yXP3XqaW4E')
+          .expect(200, 'bar,baz', done)
+        })
+
+        describe('when one signature is invalid', function () {
+          it('should return valid value only', function (done) {
+            var opts = { keys: ['keyboard cat'] }
+            request(createServer(opts, function (req, res, cookies) {
+              res.end(String(cookies.getAll('foo', { signed: true })))
+            }))
+            .get('/')
+            .set('Cookie', 'foo=bar; foo=baz; foo.sig=v5f380JakwVgx2H9B9nA6kJaZNg; foo.sig=ptOkbbiPiGfLWRzz1yXP3XqaW4E')
+            .expect(200, 'baz', done)
+          })
+
+
+          it('should delete signature cookie', function (done) {
+            var opts = { keys: ['keyboard cat'] }
+            request(createServer(opts, function (req, res, cookies) {
+              res.end(String(cookies.get('foo', { signed: true })))
+            }))
+            .get('/')
+            .set('Cookie', 'foo=bar; foo=baz; foo.sig=v5f380JakwVgx2H9B9nA6kJaZNg; foo.sig=ptOkbbiPiGfLWRzz1yXP3XqaW4E')
+            .expect(200)
+            .expect('baz')
+            .expect(shouldSetCookieCount(1))
+            .expect(shouldSetCookieWithAttributeAndValue('foo.sig', 'expires', 'Thu, 01 Jan 1970 00:00:00 GMT'))
             .end(done)
           })
         })
