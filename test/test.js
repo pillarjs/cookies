@@ -217,6 +217,16 @@ describe('new Cookies(req, res, [options])', function () {
 
     describe('"signed" option', function () {
       describe('when true', function () {
+        it('should return empty array without signatures', function (done) {
+          var opts = { keys: ['keyboard cat'] }
+          request(createServer(opts, function (req, res, cookies) {
+            res.end(String(cookies.getAll('foo', { signed: true }).length))
+          }))
+          .get('/')
+          .set('Cookie', 'foo=bar')
+          .expect(200, '0', done)
+        })
+
         it('should return signed cookie values', function (done) {
           var opts = { keys: ['keyboard cat'] }
           request(createServer(opts, function (req, res, cookies) {
