@@ -51,6 +51,50 @@ function Cookies(request, response, options) {
   }
 }
 
+Cookies.prototype.getAll = function(name, opts) {
+  var sigName = name + ".sig"
+    , header, matches, match, value, remotes, data, index, pattern, globalPattern
+    , signed = opts && opts.signed !== undefined ? opts.signed : !!this.keys
+    , values = []
+
+  header = this.request.headers["cookie"]
+  if (!header) return
+
+  pattern = getPattern(name);
+  globalPattern = getPattern(name, { global: true });
+
+  matches = header.match(globalPattern);
+  for (var i = 0; i < matches.length; i++) {
+    match = matches[i].match(pattern)
+    value = match[1]
+
+    if (!opts || !signed) {
+      values.push(match[1])
+      continue;
+    }
+
+    remotes = this.getAll(sigName)
+    if (remotes.length === 0) continue;
+
+    data = name + "=" + value
+    if (!this.keys) throw new Error('.keys required for signed cookies');
+
+    for (var j = 0; j < remotes.length; j++) {
+      index = this.keys.index(data, remotes[j])
+      if (index > -1) break
+    }
+
+    if (index < 0) {
+      this.set(sigName, null, {path: "/", signed: false })
+    } else {
+      index && this.set(sigName, this.keys.sign(data), { signed: false })
+      values.push(match[1])
+    }
+  }
+
+  return values;
+}
+
 Cookies.prototype.get = function(name, opts) {
   var sigName = name + ".sig"
     , header, match, value, remote, data, index
@@ -183,13 +227,15 @@ Object.defineProperty(Cookie.prototype, 'maxage', {
 });
 deprecate.property(Cookie.prototype, 'maxage', '"maxage"; use "maxAge" instead')
 
-function getPattern(name) {
-  if (cache[name]) return cache[name]
+function getPattern(name, opts) {
+  var flags = opts && opts.global === true ? 'g' : '';
+  if (!cache[flags]) cache[flags] = {};
+  if (cache[flags][name]) return cache[flags][name]
 
-  return cache[name] = new RegExp(
+  return cache[flags][name] = new RegExp(
     "(?:^|;) *" +
     name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") +
-    "=([^;]*)"
+    "=([^;]*)", flags
   )
 }
 
