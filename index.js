@@ -121,6 +121,10 @@ function Cookie(name, value, attrs) {
     throw new TypeError('argument name is invalid');
   }
 
+  if (value !== undefined && value !== null && typeof value !== 'string') {
+    throw new Error('argument value is not a string');
+  }
+
   if (value && !fieldContentRegExp.test(value)) {
     throw new TypeError('argument value is invalid');
   }
