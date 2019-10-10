@@ -69,8 +69,8 @@ before_install:
     fi
   - |
     # restify framework
-    # - remove on Node.js < 4
-    if [[ "$(cut -d. -f1 <<< "$TRAVIS_NODE_VERSION")" -lt 4 ]]; then
+    # - remove on Node.js < 8
+    if [[ "$(cut -d. -f1 <<< "$TRAVIS_NODE_VERSION")" -lt 8 ]]; then
       npm rm --silent --save-dev restify
     fi
   - |
