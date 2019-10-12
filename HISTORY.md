@@ -1,5 +1,5 @@
-unreleased
-==========
+0.8.0 / 2019-10-11
+==================
 
   * Fix check for default `secure` option behavior
   * Fix `maxAge` option preventing cookie deletion
