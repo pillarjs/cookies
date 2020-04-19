@@ -32,6 +32,18 @@ describe('new Cookie(name, value, [options])', function () {
     }, /option domain is invalid/)
   })
 
+  it('should throw on number value', function () {
+    assert.throws(function () {
+      new cookies.Cookie('foo', 0)
+    }, /argument value is not a string/)
+  })
+
+  it('should throw on boolean value', function () {
+    assert.throws(function () {
+      new cookies.Cookie('foo', false)
+    }, /argument value is not a string/)
+  })
+
   describe('options', function () {
     describe('maxage', function () {
       it('should set the .maxAge property', function () {

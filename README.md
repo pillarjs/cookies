@@ -61,7 +61,7 @@ If the signature cookie _does_ exist, the provided [Keygrip](https://www.npmjs.c
 
 This sets the given cookie in the response and returns the current context to allow chaining.
 
-If the _value_ is omitted, an outbound header with an expired date is used to delete the cookie.
+If the _value_ is omitted (or `null`), an outbound header with an expired date is used to delete the cookie. If _value_ is not omitted, it _must_ be given as string.
 
 If the _options_ object is provided, it will be used to generate the outbound cookie header as follows:
 
