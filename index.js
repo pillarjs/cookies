@@ -74,6 +74,7 @@ Cookies.prototype.get = function(name, opts) {
 
   if (index < 0) {
     this.set(sigName, null, {path: "/", signed: false })
+    return
   } else {
     index && this.set(sigName, this.keys.sign(data), { signed: false })
     return value
