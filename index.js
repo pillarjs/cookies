@@ -170,6 +170,7 @@ Cookie.prototype.toHeader = function() {
 
   if (this.path     ) header += "; path=" + this.path
   if (this.expires  ) header += "; expires=" + this.expires.toUTCString()
+  if (this.maxAge   ) header += "; max-age=" + this.maxAge / 1000
   if (this.domain   ) header += "; domain=" + this.domain
   if (this.sameSite ) header += "; samesite=" + (this.sameSite === true ? 'strict' : this.sameSite.toLowerCase())
   if (this.secure   ) header += "; secure"
