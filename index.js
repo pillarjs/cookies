@@ -84,7 +84,7 @@ Cookies.prototype.set = function(name, value, opts) {
   var res = this.response
     , req = this.request
     , headers = res.getHeader("Set-Cookie") || []
-    , secure = this.secure !== undefined ? !!this.secure : req.protocol === 'https' || req.connection.encrypted
+    , secure = this.secure !== undefined ? !!this.secure : req.protocol === 'https' || req.socket.encrypted
     , cookie = new Cookie(name, value, opts)
     , signed = opts && opts.signed !== undefined ? opts.signed : !!this.keys
 

@@ -167,7 +167,7 @@ describeExpress('Express', function () {
       app.set('env', 'test')
       app.use(cookies(keys))
       app.use(function (req, res, next) {
-        res.connection.encrypted = true
+        res.socket.encrypted = true
         next()
       })
       app.use(function (req, res) {
