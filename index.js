@@ -36,16 +36,17 @@ function Cookies(request, response, options) {
   this.response = response
 
   if (options) {
+    var algorithm = options.algorithm || 'sha1'
     if (Array.isArray(options)) {
       // array of key strings
       deprecate('"keys" argument; provide using options {"keys": [...]}')
-      this.keys = new Keygrip(options)
+      this.keys = new Keygrip(options, algorithm)
     } else if (options.constructor && options.constructor.name === 'Keygrip') {
       // any keygrip constructor to allow different versions
       deprecate('"keys" argument; provide using options {"keys": keygrip}')
       this.keys = options
     } else {
-      this.keys = Array.isArray(options.keys) ? new Keygrip(options.keys) : options.keys
+      this.keys = Array.isArray(options.keys) ? new Keygrip(options.keys, algorithm) : options.keys
       this.secure = options.secure
     }
   }

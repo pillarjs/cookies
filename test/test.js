@@ -72,6 +72,24 @@ describe('new Cookies(req, res, [options])', function () {
         })
       })
     })
+
+    describe('.algorithm', function () {
+      it('should default to sha1', function (done) {
+        assertServer(done, function (req, res) {
+          var cookies = new Cookies(req, res, ['keyboard cat'])
+          assert.strictEqual(typeof cookies.keys, 'object')
+          assert.strictEqual(cookies.keys.sign('foo=bar'), 'iW2fuCIzk9Cg_rqLT1CAqrtdWs8')
+        })
+      })
+
+      it('should use custom algorithm', function (done) {
+        assertServer(done, function (req, res) {
+          var cookies = new Cookies(req, res, { keys: ['keyboard cat'], algorithm: 'sha256' })
+          assert.strictEqual(typeof cookies.keys, 'object')
+          assert.strictEqual(cookies.keys.sign('foo=bar'), 'T7PQloEdbpnJ9rpAHHoM58nKmZhey506KWsHjiEKE54')
+        })
+      })
+    })
   })
 
   describe('.get(name, [options])', function () {
