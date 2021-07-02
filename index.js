@@ -90,10 +90,6 @@ Cookies.prototype.set = function(name, value, opts) {
 
   if (typeof headers == "string") headers = [headers]
 
-  if (!secure && opts && opts.secure) {
-    throw new Error('Cannot send secure cookie over unencrypted connection')
-  }
-
   cookie.secure = opts && opts.secure !== undefined
     ? opts.secure
     : secure
