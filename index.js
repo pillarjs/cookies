@@ -80,6 +80,7 @@ Cookies.prototype.get = function(name, opts) {
   if (!match) return
 
   value = match[1]
+  if (value[0] === '"') value = value.slice(1, -1)
   if (!opts || !signed) return value
 
   remote = this.get(sigName)

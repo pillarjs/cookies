@@ -2,6 +2,7 @@ unreleased
 ==========
 
   * Fix accidental cookie name/value truncation when given invalid chars
+  * Remove quotes from returned quoted cookie value
   * Use `req.socket` over deprecated `req.connection`
   * pref: small lookup regexp optimization
 

@@ -82,6 +82,13 @@ describe('new Cookies(req, res, [options])', function () {
         .expect(200, 'bar', done)
     })
 
+    it('should return unquoted value', function (done) {
+      request(createServer(getCookieHandler('foo')))
+        .get('/')
+        .set('Cookie', 'foo="bar"')
+        .expect(200, 'bar', done)
+    })
+
     it('should work for cookie name with special characters', function (done) {
       request(createServer(getCookieHandler('foo*(#bar)?.|$')))
         .get('/')
