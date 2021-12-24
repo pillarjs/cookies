@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "eslint": "7.32.0",
-    "express": "4.17.1",
+    "express": "4.17.2",
     "mocha": "8.4.0",
     "nyc": "15.1.0",
     "restify": "8.6.0",
