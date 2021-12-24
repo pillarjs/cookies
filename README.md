@@ -31,7 +31,7 @@ $ npm install cookies
 
 ## API
 
-### cookies = new Cookies( request, response, [ options ] )
+### new Cookies(request, response [, options])
 
 This creates a cookie jar corresponding to the current _request_ and _response_, additionally passing an object _options_.
 
@@ -41,11 +41,11 @@ A Boolean can optionally be passed as _options.secure_ to explicitally specify i
 
 Note that since this only saves parameters without any other processing, it is very lightweight. Cookies are only parsed on demand when they are accessed.
 
-### express.createServer( Cookies.express( keys ) )
+### Cookies.express(keys)
 
 This adds cookie support as a Connect middleware layer for use in Express apps, allowing inbound cookies to be read using `req.cookies.get` and outbound cookies to be set using `res.cookies.set`.
 
-### cookies.get( name, [ options ] )
+### cookies.get(name [, options])
 
 This extracts the cookie with the given name from the `Cookie` header in the request. If such a cookie exists, its value is returned. Otherwise, nothing is returned.
 
@@ -57,7 +57,7 @@ If the signature cookie _does_ exist, the provided [Keygrip](https://www.npmjs.c
 * If the signature cookie hash matches any other key, the original cookie value is returned AND an outbound header is set to update the signature cookie's value to the hash of the first key. This enables automatic freshening of signature cookies that have become stale due to key rotation.
 * If the signature cookie hash does not match any key, nothing is returned, and an outbound header with an expired date is used to delete the cookie.
 
-### cookies.set( name, [ value ], [ options ] )
+### cookies.set(name [, values [, options]])
 
 This sets the given cookie in the response and returns the current context to allow chaining.
 
