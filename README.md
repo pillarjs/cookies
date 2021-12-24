@@ -33,11 +33,11 @@ $ npm install cookies
 
 ### new Cookies(request, response [, options])
 
-This creates a cookie jar corresponding to the current _request_ and _response_, additionally passing an object _options_.
+Create a new cookie jar for a given `request` and `response` pair. The `request` argument is a [Node.js HTTP incoming request object](https://nodejs.org/dist/latest-v16.x/docs/api/http.html#class-httpincomingmessage) and the `response` argument is a [Node.js HTTP server response object](https://nodejs.org/dist/latest-v16.x/docs/api/http.html#class-httpserverresponse).
 
-A [Keygrip](https://www.npmjs.com/package/keygrip) object or an array of keys can optionally be passed as _options.keys_ to enable cryptographic signing based on SHA1 HMAC, using rotated credentials.
+A [Keygrip](https://www.npmjs.com/package/keygrip) object or an array of keys can optionally be passed as `options.keys` to enable cryptographic signing based on SHA1 HMAC, using rotated credentials.
 
-A Boolean can optionally be passed as _options.secure_ to explicitally specify if the connection is secure, rather than this module examining _request_.
+A Boolean can optionally be passed as `options.secure` to explicitally specify if the connection is secure, rather than this module examining `request`.
 
 Note that since this only saves parameters without any other processing, it is very lightweight. Cookies are only parsed on demand when they are accessed.
 
