@@ -1,6 +1,7 @@
 unreleased
 ==========
 
+  * Fix accidental cookie name/value truncation when given invalid chars
   * Use `req.socket` over deprecated `req.connection`
   * pref: small lookup regexp optimization
 

@@ -12,11 +12,17 @@ describe('new Cookie(name, value, [options])', function () {
     assert.throws(function () {
       new cookies.Cookie('foo\n', 'bar')
     }, /argument name is invalid/)
+    assert.throws(function () {
+      assert.ok(!new cookies.Cookie('foo=', 'bar'))
+    }, /argument name is invalid/)
   })
 
   it('should throw on invalid value', function () {
     assert.throws(function () {
       new cookies.Cookie('foo', 'bar\n')
+    }, /argument value is invalid/)
+    assert.throws(function () {
+      assert.ok(!new cookies.Cookie('foo', 'bar;'))
     }, /argument value is invalid/)
   })
 
