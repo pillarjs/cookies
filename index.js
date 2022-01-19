@@ -84,9 +84,11 @@ Cookies.prototype.set = function(name, value, opts) {
   var res = this.response
     , req = this.request
     , headers = res.getHeader("Set-Cookie") || []
-    , secure = this.secure !== undefined ? !!this.secure : req.protocol === 'https' || req.connection.encrypted
     , cookie = new Cookie(name, value, opts)
     , signed = opts && opts.signed !== undefined ? opts.signed : !!this.keys
+  var secure = this.secure === undefined
+    ? req.protocol === 'https' || isRequestEncrypted(req)
+    : Boolean(this.secure)
 
   if (typeof headers == "string") headers = [headers]
 
@@ -195,6 +197,20 @@ function getPattern(name) {
     name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") +
     "=([^;]*)"
   )
+}
+
+/**
+ * Get the encrypted status for a request.
+ *
+ * @param {object} req
+ * @return {string}
+ * @private
+ */
+
+function isRequestEncrypted (req) {
+  return req.socket
+    ? req.socket.encrypted
+    : req.connection.encrypted
 }
 
 function pushCookie(headers, cookie) {
