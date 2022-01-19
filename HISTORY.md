@@ -2,6 +2,7 @@ unreleased
 ==========
 
   * Use `req.socket` over deprecated `req.connection`
+  * pref: small lookup regexp optimization
 
 0.8.0 / 2019-10-11
 ==================

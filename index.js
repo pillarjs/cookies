@@ -10,7 +10,6 @@
 var deprecate = require('depd')('cookies')
 var Keygrip = require('keygrip')
 var http = require('http')
-var cache = {}
 
 /**
  * RegExp to match field-content in RFC 7230 sec 3.2
@@ -21,6 +20,18 @@ var cache = {}
  */
 
 var fieldContentRegExp = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
+
+/**
+ * Cache for generated name regular expressions.
+ */
+
+var REGEXP_CACHE = Object.create(null)
+
+/**
+ * RegExp to match all characters to escape in a RegExp.
+ */
+
+var REGEXP_ESCAPE_CHARS_REGEXP = /[\^$\\.*+?()[\]{}|]/g
 
 /**
  * RegExp to match Same-Site cookie attribute value.
@@ -189,14 +200,22 @@ Object.defineProperty(Cookie.prototype, 'maxage', {
 });
 deprecate.property(Cookie.prototype, 'maxage', '"maxage"; use "maxAge" instead')
 
-function getPattern(name) {
-  if (cache[name]) return cache[name]
+/**
+ * Get the pattern to search for a cookie in a string.
+ * @param {string} name
+ * @private
+ */
 
-  return cache[name] = new RegExp(
-    "(?:^|;) *" +
-    name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") +
-    "=([^;]*)"
-  )
+function getPattern (name) {
+  if (!REGEXP_CACHE[name]) {
+    REGEXP_CACHE[name] = new RegExp(
+      '(?:^|;) *' +
+      name.replace(REGEXP_ESCAPE_CHARS_REGEXP, '\\$&') +
+      '=([^;]*)'
+    )
+  }
+
+  return REGEXP_CACHE[name]
 }
 
 /**
