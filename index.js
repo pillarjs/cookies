@@ -22,6 +22,12 @@ var http = require('http')
 var fieldContentRegExp = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
 
 /**
+ * RegExp to match Priority cookie attribute value.
+ */
+
+var PRIORITY_REGEXP = /^(?:low|medium|high)$/i
+
+/**
  * Cache for generated name regular expressions.
  */
 
@@ -166,6 +172,10 @@ function Cookie(name, value, attrs) {
     throw new TypeError('option domain is invalid');
   }
 
+  if (this.priority && !PRIORITY_REGEXP.test(this.priority)) {
+    throw new TypeError('option priority is invalid')
+  }
+
   if (this.sameSite && this.sameSite !== true && !SAME_SITE_REGEXP.test(this.sameSite)) {
     throw new TypeError('option sameSite is invalid')
   }
@@ -175,6 +185,7 @@ Cookie.prototype.path = "/";
 Cookie.prototype.expires = undefined;
 Cookie.prototype.domain = undefined;
 Cookie.prototype.httpOnly = true;
+Cookie.prototype.priority = undefined
 Cookie.prototype.sameSite = false;
 Cookie.prototype.secure = false;
 Cookie.prototype.overwrite = false;
@@ -191,6 +202,7 @@ Cookie.prototype.toHeader = function() {
   if (this.path     ) header += "; path=" + this.path
   if (this.expires  ) header += "; expires=" + this.expires.toUTCString()
   if (this.domain   ) header += "; domain=" + this.domain
+  if (this.priority ) header += "; priority=" + this.priority.toLowerCase()
   if (this.sameSite ) header += "; samesite=" + (this.sameSite === true ? 'strict' : this.sameSite.toLowerCase())
   if (this.secure   ) header += "; secure"
   if (this.httpOnly ) header += "; httponly"

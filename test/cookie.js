@@ -63,6 +63,52 @@ describe('new Cookie(name, value, [options])', function () {
       })
     })
 
+    describe('priority', function () {
+      it('should set the .priority property', function () {
+        var cookie = new cookies.Cookie('foo', 'bar', { priority: 'low' })
+        assert.strictEqual(cookie.priority, 'low')
+      })
+
+      it('should default to undefined', function () {
+        var cookie = new cookies.Cookie('foo', 'bar')
+        assert.strictEqual(cookie.priority, undefined)
+      })
+
+      it('should throw on invalid value', function () {
+        assert.throws(function () {
+          new cookies.Cookie('foo', 'bar', { priority: 'foo' })
+        }, /option priority is invalid/)
+      })
+
+      describe('when set to "low"', function () {
+        it('should set "priority=low" attribute in header', function () {
+          var cookie = new cookies.Cookie('foo', 'bar', { priority: 'low' })
+          assert.strictEqual(cookie.toHeader(), 'foo=bar; path=/; priority=low; httponly')
+        })
+      })
+
+      describe('when set to "medium"', function () {
+        it('should set "priority=medium" attribute in header', function () {
+          var cookie = new cookies.Cookie('foo', 'bar', { priority: 'medium' })
+          assert.strictEqual(cookie.toHeader(), 'foo=bar; path=/; priority=medium; httponly')
+        })
+      })
+
+      describe('when set to "high"', function () {
+        it('should set "priority=high" attribute in header', function () {
+          var cookie = new cookies.Cookie('foo', 'bar', { priority: 'high' })
+          assert.strictEqual(cookie.toHeader(), 'foo=bar; path=/; priority=high; httponly')
+        })
+      })
+
+      describe('when set to "HIGH"', function () {
+        it('should set "priority=high" attribute in header', function () {
+          var cookie = new cookies.Cookie('foo', 'bar', { priority: 'HIGH' })
+          assert.strictEqual(cookie.toHeader(), 'foo=bar; path=/; priority=high; httponly')
+        })
+      })
+    })
+
     describe('sameSite', function () {
       it('should set the .sameSite property', function () {
         var cookie = new cookies.Cookie('foo', 'bar', { sameSite: true })
