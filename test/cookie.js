@@ -61,6 +61,24 @@ describe('new Cookie(name, value, [options])', function () {
         var cookie = new cookies.Cookie('foo', 'bar', { maxAge: 86400 })
         assert.equal(cookie.maxage, 86400)
       })
+
+      it('should throw on invalid value', function () {
+        assert.throws(function () {
+          new cookies.Cookie('foo', 'bar', { maxAge: 'foo' })
+        }, /option maxAge is invalid/)
+      })
+
+      it('should throw on Infinity', function () {
+        assert.throws(function () {
+          new cookies.Cookie('foo', 'bar', { maxAge: Infinity })
+        }, /option maxAge is invalid/)
+      })
+
+      it('should throw on NaN', function () {
+        assert.throws(function () {
+          new cookies.Cookie('foo', 'bar', { maxAge: NaN })
+        }, /option maxAge is invalid/)
+      })
     })
 
     describe('priority', function () {
