@@ -172,6 +172,10 @@ function Cookie(name, value, attrs) {
     throw new TypeError('option domain is invalid');
   }
 
+  if (typeof this.maxAge === 'number' ? (isNaN(this.maxAge) || !isFinite(this.maxAge)) : this.maxAge) {
+    throw new TypeError('option maxAge is invalid')
+  }
+
   if (this.priority && !PRIORITY_REGEXP.test(this.priority)) {
     throw new TypeError('option priority is invalid')
   }
