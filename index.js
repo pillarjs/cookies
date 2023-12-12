@@ -189,6 +189,7 @@ Cookie.prototype.path = "/";
 Cookie.prototype.expires = undefined;
 Cookie.prototype.domain = undefined;
 Cookie.prototype.httpOnly = true;
+Cookie.prototype.partitioned = false
 Cookie.prototype.priority = undefined
 Cookie.prototype.sameSite = false;
 Cookie.prototype.secure = false;
@@ -210,6 +211,7 @@ Cookie.prototype.toHeader = function() {
   if (this.sameSite ) header += "; samesite=" + (this.sameSite === true ? 'strict' : this.sameSite.toLowerCase())
   if (this.secure   ) header += "; secure"
   if (this.httpOnly ) header += "; httponly"
+  if (this.partitioned) header += '; partitioned'
 
   return header
 };

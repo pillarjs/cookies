@@ -339,6 +339,32 @@ describe('new Cookies(req, res, [options])', function () {
       })
     })
 
+    describe('"partitioned" option', function () {
+      it('should not be set by default', function (done) {
+        request(createServer(setCookieHandler('foo', 'bar')))
+          .get('/')
+          .expect(200)
+          .expect(shouldSetCookieWithoutAttribute('foo', 'partitioned'))
+          .end(done)
+      })
+
+      it('should set to true', function (done) {
+        request(createServer(setCookieHandler('foo', 'bar', { partitioned: true })))
+          .get('/')
+          .expect(200)
+          .expect(shouldSetCookieWithAttribute('foo', 'partitioned'))
+          .end(done)
+      })
+
+      it('should set to false', function (done) {
+        request(createServer(setCookieHandler('foo', 'bar', { partitioned: false })))
+          .get('/')
+          .expect(200)
+          .expect(shouldSetCookieWithoutAttribute('foo', 'partitioned'))
+          .end(done)
+      })
+    })
+
     describe('"path" option', function () {
       it('should default to "/"', function (done) {
         request(createServer(setCookieHandler('foo', 'bar')))

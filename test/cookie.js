@@ -81,6 +81,32 @@ describe('new Cookie(name, value, [options])', function () {
       })
     })
 
+    describe('partitioned', function () {
+      it('should set the .partitioned property', function () {
+        var cookie = new cookies.Cookie('foo', 'bar', { partitioned: true })
+        assert.strictEqual(cookie.partitioned, true)
+      })
+
+      it('should default to false', function () {
+        var cookie = new cookies.Cookie('foo', 'bar')
+        assert.strictEqual(cookie.partitioned, false)
+      })
+
+      describe('when set to false', function () {
+        it('should not set partitioned attribute in header', function () {
+          var cookie = new cookies.Cookie('foo', 'bar', { partitioned: false })
+          assert.strictEqual(cookie.toHeader(), 'foo=bar; path=/; httponly')
+        })
+      })
+
+      describe('when set to true', function () {
+        it('should set partitioned attribute in header', function () {
+          var cookie = new cookies.Cookie('foo', 'bar', { partitioned: true })
+          assert.strictEqual(cookie.toHeader(), 'foo=bar; path=/; httponly; partitioned')
+        })
+      })
+    })
+
     describe('priority', function () {
       it('should set the .priority property', function () {
         var cookie = new cookies.Cookie('foo', 'bar', { priority: 'low' })

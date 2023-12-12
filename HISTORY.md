@@ -1,6 +1,7 @@
 unreleased
 ==========
 
+  * Add `partitioned` option for CHIPS support
   * Add `priority` option for Priority cookie support
   * Fix accidental cookie name/value truncation when given invalid chars
   * Fix `maxAge` option to reject invalid values
