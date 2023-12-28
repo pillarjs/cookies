@@ -128,7 +128,7 @@ jobs:
           node-version: "19.9"
 
         - name: Node.js 20.x
-          node-version: "20.5"
+          node-version: "20.10"
 
     steps:
     - uses: actions/checkout@v2
