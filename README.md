@@ -4,7 +4,7 @@ Cookies
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Node.js Version][node-version-image]][node-version-url]
-[![Build Status][github-actions-ci-image]][github-actions-ci-url]
+[![Build Status][ci-image]][ci-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
 
 Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S) cookies. Cookies can be signed to prevent tampering, using [Keygrip](https://www.npmjs.com/package/keygrip). It can be used with the built-in node.js HTTP library, or as Connect/Express middleware.
@@ -135,13 +135,13 @@ server.listen(3000, function () {
 
 [MIT](LICENSE)
 
+[ci-image]: https://badgen.net/github/checks/pillarjs/cookies/master?label=ci
+[ci-url]: https://github.com/pillarjs/cookies/actions/workflows/ci.yml
 [npm-image]: https://img.shields.io/npm/v/cookies.svg
 [npm-url]: https://npmjs.org/package/cookies
+[node-version-image]: https://img.shields.io/node/v/cookies.svg
+[node-version-url]: http://nodejs.org/download/
 [coveralls-image]: https://img.shields.io/coveralls/pillarjs/cookies/master.svg
 [coveralls-url]: https://coveralls.io/r/pillarjs/cookies?branch=master
 [downloads-image]: https://img.shields.io/npm/dm/cookies.svg
 [downloads-url]: https://npmjs.org/package/cookies
-[github-actions-ci-image]: https://img.shields.io/github/workflow/status/pillarjs/cookies/ci/master.svg?label=ci
-[github-actions-ci-url]: https://github.com/pillarjs/cookies/actions?query=workflow%3Aci
-[node-version-image]: https://img.shields.io/node/v/cookies.svg
-[node-version-url]: https://nodejs.org/en/download/
