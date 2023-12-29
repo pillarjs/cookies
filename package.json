@@ -1,7 +1,7 @@
 {
   "name": "cookies",
   "description": "Cookies, optionally signed using Keygrip.",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "author": "Jed Schmidt <tr@nslator.jp> (http://jed.is)",
   "contributors": [
     "Douglas Christopher Wilson <doug@somethingdoug.com>"

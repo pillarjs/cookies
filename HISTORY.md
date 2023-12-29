@@ -1,5 +1,5 @@
-unreleased
-==========
+0.9.0 / 2023-12-28
+==================
 
   * Add `partitioned` option for CHIPS support
   * Add `priority` option for Priority cookie support
