@@ -1,5 +1,5 @@
-unreleased
-==========
+0.9.1 / 2024-01-01
+==================
 
   * Fix incorrectly disallowing equals sign in cookie value
 
