@@ -40,10 +40,16 @@ var REGEXP_CACHE = Object.create(null)
 var REGEXP_ESCAPE_CHARS_REGEXP = /[\^$\\.*+?()[\]{}|]/g
 
 /**
- * RegExp to match basic restricted characters for loose validation.
+ * RegExp to match basic restricted name characters for loose validation.
  */
 
-var RESTRICTED_CHARS_REGEXP = /[;=]/
+var RESTRICTED_NAME_CHARS_REGEXP = /[;=]/
+
+/**
+ * RegExp to match basic restricted value characters for loose validation.
+ */
+
+var RESTRICTED_VALUE_CHARS_REGEXP = /[;]/
 
 /**
  * RegExp to match Same-Site cookie attribute value.
@@ -144,11 +150,11 @@ Cookies.prototype.set = function(name, value, opts) {
 };
 
 function Cookie(name, value, attrs) {
-  if (!fieldContentRegExp.test(name) || RESTRICTED_CHARS_REGEXP.test(name)) {
+  if (!fieldContentRegExp.test(name) || RESTRICTED_NAME_CHARS_REGEXP.test(name)) {
     throw new TypeError('argument name is invalid');
   }
 
-  if (value && (!fieldContentRegExp.test(value) || RESTRICTED_CHARS_REGEXP.test(value))) {
+  if (value && (!fieldContentRegExp.test(value) || RESTRICTED_VALUE_CHARS_REGEXP.test(value))) {
     throw new TypeError('argument value is invalid');
   }
 

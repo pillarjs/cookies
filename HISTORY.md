@@ -1,3 +1,8 @@
+unreleased
+==========
+
+  * Fix incorrectly disallowing equals sign in cookie value
+
 0.9.0 / 2023-12-28
 ==================
 
