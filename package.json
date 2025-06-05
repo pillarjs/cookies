@@ -18,7 +18,7 @@
     "mocha": "10.2.0",
     "nyc": "15.1.0",
     "restify": "8.6.1",
-    "supertest": "6.3.3"
+    "supertest": "6.3.4"
   },
   "files": [
     "HISTORY.md",
