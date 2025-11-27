@@ -209,7 +209,7 @@ jobs:
 
     - name: Upload code coverage
       uses: actions/upload-artifact@v4
-      if: steps.list_env.outputs.nyc != ''
+      if: steps.list_env.outputs.nyc != '' && hashFiles('coverage/lcov.info') != ''
       with:
         name: coverage-${{ matrix.name }}
         path: ./coverage/lcov.info
@@ -234,9 +234,12 @@ jobs:
         path: ./coverage
         pattern: coverage-*
 
+    - name: List downloaded artifacts
+      run: ls -laR ./coverage
+
     - name: Merge coverage reports
       shell: bash
-      run: find ./coverage -name lcov.info -exec printf '-a %q\n' {} \; | xargs lcov -o ./lcov.info
+      run: find ./coverage -type f -name lcov.info -exec printf '-a %q\n' {} \; | xargs lcov -o ./lcov.info
 
     - name: Upload coverage report
       uses: coverallsapp/github-action@master
