@@ -103,7 +103,7 @@ jobs:
 
         - name: Node.js 11.x
           node-version: "11.15"
-          npm-i: mocha@8.4.0
+          npm-i: mocha@8.4.0 supertest@6.1.6
 
         - name: Node.js 12.x
           node-version: "12.22"
@@ -219,7 +219,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: steps.list_env.outputs.nyc != ''
       with:
-        name: coverage
+        name: coverage-${{ matrix.name }}
         path: ./coverage
         retention-days: 1
 
@@ -229,6 +229,9 @@ jobs:
       contents: read  # for actions/checkout to fetch code
     needs: test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
     steps:
     - uses: actions/checkout@v4
 
@@ -237,10 +240,10 @@ jobs:
       run: sudo apt-get -y install lcov
 
     - name: Collect coverage reports
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v6
       with:
-        name: coverage
         path: ./coverage
+        pattern: coverage-*
 
     - name: Merge coverage reports
       shell: bash
