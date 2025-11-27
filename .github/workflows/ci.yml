@@ -211,7 +211,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: steps.list_env.outputs.nyc != '' && hashFiles('coverage/lcov.info') != ''
       with:
-        name: coverage-${{ matrix.name }}
+        name: coverage-node-${{ matrix.node-version }}
         path: ./coverage/lcov.info
         retention-days: 1
 
@@ -232,10 +232,7 @@ jobs:
       uses: actions/download-artifact@v6
       with:
         path: ./coverage
-        pattern: coverage-*
-
-    - name: List downloaded artifacts
-      run: ls -laR ./coverage
+        pattern: coverage-node-*
 
     - name: Merge coverage reports
       shell: bash
@@ -244,5 +241,5 @@ jobs:
     - name: Upload coverage report
       uses: coverallsapp/github-action@master
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
         file: ./lcov.info
+        github-token: ${{ secrets.GITHUB_TOKEN }}
