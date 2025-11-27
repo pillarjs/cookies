@@ -241,5 +241,5 @@ jobs:
     - name: Upload coverage report
       uses: coverallsapp/github-action@master
       with:
-        file: ./lcov.info
         github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./lcov.info
