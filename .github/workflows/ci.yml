@@ -199,7 +199,6 @@ jobs:
       run: |
         if npm -ps ls nyc | grep -q nyc; then
           npm run test-ci
-          cp coverage/lcov.info "coverage/${{ matrix.name }}.lcov"
         else
           npm test
         fi
@@ -208,21 +207,12 @@ jobs:
       if: steps.list_env.outputs.eslint != ''
       run: npm run lint
 
-    - name: Collect code coverage
-      if: steps.list_env.outputs.nyc != ''
-      run: |
-        if [[ -d ./coverage ]]; then
-          mv ./coverage "./${{ matrix.name }}"
-          mkdir ./coverage
-          mv "./${{ matrix.name }}" "./coverage/${{ matrix.name }}"
-        fi
-
     - name: Upload code coverage
       uses: actions/upload-artifact@v4
       if: steps.list_env.outputs.nyc != ''
       with:
         name: coverage-${{ matrix.name }}
-        path: ./coverage
+        path: ./coverage/lcov.info
         retention-days: 1
 
   coverage:
@@ -246,9 +236,10 @@ jobs:
 
     - name: Merge coverage reports
       shell: bash
-      run: find ./coverage -name lcov.info -exec printf '-a %q\n' {} \; | xargs lcov -o ./coverage/lcov.info
+      run: find ./coverage -name lcov.info -exec printf '-a %q\n' {} \; | xargs lcov -o ./lcov.info
 
     - name: Upload coverage report
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
+        file: ./lcov.info
