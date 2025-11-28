@@ -95,33 +95,35 @@ jobs:
 
         - name: Node.js 8.x
           node-version: "8.17"
-          npm-i: mocha@7.2.0 nyc@14.1.1
+          npm-i: mocha@7.2.0 nyc@14.1.1 supertest@6.1.6
 
         - name: Node.js 9.x
           node-version: "9.11"
-          npm-i: mocha@7.2.0 nyc@14.1.1
+          npm-i: mocha@7.2.0 nyc@14.1.1 supertest@6.1.6
 
         - name: Node.js 10.x
           node-version: "10.24"
-          npm-i: mocha@8.4.0
+          npm-i: mocha@8.4.0 supertest@6.1.6
 
         - name: Node.js 11.x
           node-version: "11.15"
-          npm-i: mocha@8.4.0
+          npm-i: mocha@8.4.0 supertest@6.1.6
 
         - name: Node.js 12.x
           node-version: "12.22"
-          npm-i: mocha@9.2.2
+          npm-i: mocha@9.2.2 supertest@6.1.6
 
         - name: Node.js 13.x
           node-version: "13.14"
-          npm-i: mocha@9.2.2
+          npm-i: mocha@9.2.2 supertest@6.1.6
 
         - name: Node.js 14.x
           node-version: "14.21"
+          npm-i: supertest@6.1.6
 
         - name: Node.js 15.x
           node-version: "15.14"
+          npm-i: "supertest@6.1.6"
 
         - name: Node.js 16.x
           node-version: "16.20"
@@ -142,7 +144,7 @@ jobs:
           node-version: "21.4"
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Install Node.js ${{ matrix.node-version }}
       shell: bash -eo pipefail -l {0}
@@ -201,7 +203,6 @@ jobs:
       run: |
         if npm -ps ls nyc | grep -q nyc; then
           npm run test-ci
-          cp coverage/lcov.info "coverage/${{ matrix.name }}.lcov"
         else
           npm test
         fi
@@ -210,47 +211,39 @@ jobs:
       if: steps.list_env.outputs.eslint != ''
       run: npm run lint
 
-    - name: Collect code coverage
-      if: steps.list_env.outputs.nyc != ''
-      run: |
-        if [[ -d ./coverage ]]; then
-          mv ./coverage "./${{ matrix.name }}"
-          mkdir ./coverage
-          mv "./${{ matrix.name }}" "./coverage/${{ matrix.name }}"
-        fi
-
     - name: Upload code coverage
-      uses: actions/upload-artifact@v3
-      if: steps.list_env.outputs.nyc != ''
+      uses: actions/upload-artifact@v4
+      if: steps.list_env.outputs.nyc != '' && hashFiles('coverage/lcov.info') != ''
       with:
-        name: coverage
-        path: ./coverage
+        name: coverage-node-${{ matrix.node-version }}
+        path: ./coverage/lcov.info
         retention-days: 1
 
   coverage:
-    permissions:
-      checks: write  # for coverallsapp/github-action to create new checks
-      contents: read  # for actions/checkout to fetch code
     needs: test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read  # for actions/checkout to fetch code
+      checks: write   # for coverallsapp/github-action to create new checks
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Install lcov
       shell: bash
       run: sudo apt-get -y install lcov
 
     - name: Collect coverage reports
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v6
       with:
-        name: coverage
         path: ./coverage
+        pattern: coverage-node-*
 
     - name: Merge coverage reports
       shell: bash
-      run: find ./coverage -name lcov.info -exec printf '-a %q\n' {} \; | xargs lcov -o ./coverage/lcov.info
+      run: find ./coverage -type f -name lcov.info -exec printf '-a %q\n' {} \; | xargs lcov -o ./lcov.info
 
     - name: Upload coverage report
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./lcov.info
