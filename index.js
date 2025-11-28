@@ -7,8 +7,8 @@
 
 'use strict'
 
+var crypto = require('crypto')
 var deprecate = require('depd')('cookies')
-var Keygrip = require('keygrip')
 var http = require('http')
 
 /**
@@ -286,5 +286,74 @@ Cookies.connect = Cookies.express = function(keys) {
 }
 
 Cookies.Cookie = Cookie
+
+function Keygrip (keys, algorithm, encoding) {
+  if (!(this instanceof Keygrip)) return new Keygrip(keys, algorithm, encoding)
+
+  if (!keys || !(0 in keys)) {
+    throw new Error('Keys must be provided.')
+  }
+
+  this.keys = keys
+  this.algorithm = algorithm || 'sha1'
+  this.encoding = encoding || 'base64'
+}
+
+Keygrip.prototype.sign = function sign (data) {
+  return hmac(this.algorithm, this.keys[0], data, this.encoding)
+}
+
+Keygrip.prototype.index = function index (data, digest) {
+  for (var i = 0, l = this.keys.length; i < l; i++) {
+    var computed = hmac(this.algorithm, this.keys[i], data, this.encoding)
+    if (constantTimeCompare(digest, computed)) {
+      return i
+    }
+  }
+
+  return -1
+}
+
+Keygrip.prototype.verify = function verify (data, digest) {
+  return this.index(data, digest) > -1
+}
+
+function hmac (algorithm, key, data, encoding) {
+  return crypto
+    .createHmac(algorithm, key)
+    .update(data)
+    .digest(encoding)
+    .replace(/\/|\+|=/g, function (x) {
+      return ({ '/': '_', '+': '-', '=': '' })[x]
+    })
+}
+
+function constantTimeCompare (a, b) {
+  var sa = String(a)
+  var sb = String(b)
+  var key = crypto.pseudoRandomBytes(32)
+  var ah = crypto.createHmac('sha256', key).update(sa).digest()
+  var bh = crypto.createHmac('sha256', key).update(sb).digest()
+
+  return bufferEqual(ah, bh) && a === b
+}
+
+function bufferEqual (a, b) {
+  if (a.length !== b.length) {
+    return false
+  }
+
+  if (crypto.timingSafeEqual) {
+    return crypto.timingSafeEqual(a, b)
+  }
+
+  var result = 0
+  for (var i = 0; i < a.length; i++) {
+    result |= a[i] ^ b[i]
+  }
+  return result === 0
+}
+
+Cookies.Keygrip = Keygrip
 
 module.exports = Cookies
