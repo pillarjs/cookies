@@ -143,6 +143,18 @@ jobs:
         - name: Node.js 21.x
           node-version: "21.4"
 
+        - name: Node.js 22.x
+          node-version: "22.11"
+
+        - name: Node.js 23.x
+          node-version: "23.3"
+
+        - name: Node.js 24.x
+          node-version: "24.0"
+
+        - name: Node.js 25.x
+          node-version: "25.0"
+
     steps:
     - uses: actions/checkout@v4
 
