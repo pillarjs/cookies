@@ -4,7 +4,7 @@ var Cookies = require('..')
 var fs = require('fs')
 var http = require('http')
 var https = require('https')
-var Keygrip = require('keygrip')
+var Keygrip = require('..').Keygrip
 var path = require('path')
 var request = require('supertest')
 
@@ -601,6 +601,216 @@ describe('Cookies(req, res, [options])', function () {
       assert.strictEqual(cookies.request, req)
       assert.strictEqual(cookies.response, res)
       assert.strictEqual(typeof cookies.keys, 'object')
+    })
+  })
+})
+
+describe('Keygrip', function () {
+  describe('constructor', function () {
+    it('should have correct constructor', function () {
+      var keys = new Keygrip(['key1'])
+      assert.strictEqual(keys.constructor, Keygrip)
+    })
+
+    it('should work without new keyword', function () {
+      var keys = Keygrip(['key1'])
+      assert.strictEqual(keys.constructor, Keygrip)
+    })
+
+    it('should throw without keys', function () {
+      assert.throws(function () {
+        new Keygrip()
+      }, /Keys must be provided/)
+    })
+
+    it('should throw with empty array', function () {
+      assert.throws(function () {
+        new Keygrip([])
+      }, /Keys must be provided/)
+    })
+
+    it('should default to sha1 algorithm', function () {
+      var keys = new Keygrip(['key1'])
+      assert.strictEqual(keys.algorithm, 'sha1')
+    })
+
+    it('should default to base64 encoding', function () {
+      var keys = new Keygrip(['key1'])
+      assert.strictEqual(keys.encoding, 'base64')
+    })
+
+    it('should accept custom algorithm', function () {
+      var keys = new Keygrip(['key1'], 'sha256')
+      assert.strictEqual(keys.algorithm, 'sha256')
+    })
+
+    it('should accept custom encoding', function () {
+      var keys = new Keygrip(['key1'], 'sha1', 'hex')
+      assert.strictEqual(keys.encoding, 'hex')
+    })
+  })
+
+  describe('.sign(data)', function () {
+    it('should sign data with first key', function () {
+      var keys = new Keygrip(['keyboard cat'])
+      var signature = keys.sign('foo=bar')
+      assert.strictEqual(signature, 'iW2fuCIzk9Cg_rqLT1CAqrtdWs8')
+    })
+
+    it('should produce url-safe base64', function () {
+      var keys = new Keygrip(['test key'])
+      var signature = keys.sign('test data')
+      assert.ok(!/[\/\+=]/.test(signature), 'signature should not contain /, +, or =')
+    })
+
+    it('should produce different signatures for different data', function () {
+      var keys = new Keygrip(['key1'])
+      var sig1 = keys.sign('data1')
+      var sig2 = keys.sign('data2')
+      assert.notStrictEqual(sig1, sig2)
+    })
+
+    it('should produce different signatures for different keys', function () {
+      var keys1 = new Keygrip(['key1'])
+      var keys2 = new Keygrip(['key2'])
+      var sig1 = keys1.sign('data')
+      var sig2 = keys2.sign('data')
+      assert.notStrictEqual(sig1, sig2)
+    })
+
+    it('should work with sha256 algorithm', function () {
+      var keys = new Keygrip(['key1'], 'sha256')
+      var signature = keys.sign('test')
+      assert.ok(signature.length > 0)
+    })
+  })
+
+  describe('.verify(data, digest)', function () {
+    it('should verify valid signature', function () {
+      var keys = new Keygrip(['key1'])
+      var signature = keys.sign('data')
+      assert.ok(keys.verify('data', signature))
+    })
+
+    it('should reject invalid signature', function () {
+      var keys = new Keygrip(['key1'])
+      assert.ok(!keys.verify('data', 'invalidsignature'))
+    })
+
+    it('should reject signature from different key', function () {
+      var keys1 = new Keygrip(['key1'])
+      var keys2 = new Keygrip(['key2'])
+      var signature = keys1.sign('data')
+      assert.ok(!keys2.verify('data', signature))
+    })
+
+    it('should reject signature for different data', function () {
+      var keys = new Keygrip(['key1'])
+      var signature = keys.sign('data1')
+      assert.ok(!keys.verify('data2', signature))
+    })
+
+    it('should verify with any key in keylist', function () {
+      var keys = new Keygrip(['key1', 'key2', 'key3'])
+      var signature = keys.sign('data')
+      assert.ok(keys.verify('data', signature))
+    })
+  })
+
+  describe('.index(data, digest)', function () {
+    it('should return 0 for signature from first key', function () {
+      var keys = new Keygrip(['key1', 'key2'])
+      var signature = keys.sign('data')
+      assert.strictEqual(keys.index('data', signature), 0)
+    })
+
+    it('should return correct index for old key', function () {
+      var oldKeys = new Keygrip(['oldkey'])
+      var signature = oldKeys.sign('data')
+      var newKeys = new Keygrip(['newkey', 'oldkey'])
+      assert.strictEqual(newKeys.index('data', signature), 1)
+    })
+
+    it('should return -1 for invalid signature', function () {
+      var keys = new Keygrip(['key1'])
+      assert.strictEqual(keys.index('data', 'invalidsignature'), -1)
+    })
+
+    it('should return -1 for signature from unknown key', function () {
+      var keys1 = new Keygrip(['key1'])
+      var keys2 = new Keygrip(['key2'])
+      var signature = keys1.sign('data')
+      assert.strictEqual(keys2.index('data', signature), -1)
+    })
+
+    it('should support key rotation', function () {
+      var keys = new Keygrip(['newest', 'older', 'oldest'])
+      var oldSignature = new Keygrip(['oldest']).sign('data')
+      assert.strictEqual(keys.index('data', oldSignature), 2)
+    })
+  })
+
+  describe('key rotation', function () {
+    it('should verify old signatures after key rotation', function () {
+      var oldKeys = new Keygrip(['key1'])
+      var signature = oldKeys.sign('session=abc123')
+
+      var newKeys = new Keygrip(['key2', 'key1'])
+      assert.ok(newKeys.verify('session=abc123', signature))
+      assert.strictEqual(newKeys.index('session=abc123', signature), 1)
+    })
+
+    it('should sign with newest key', function () {
+      var keys = new Keygrip(['newest', 'older', 'oldest'])
+      var signature = keys.sign('data')
+      assert.strictEqual(keys.index('data', signature), 0)
+    })
+  })
+
+  describe('edge cases', function () {
+    it('should handle empty string data', function () {
+      var keys = new Keygrip(['key1'])
+      var signature = keys.sign('')
+      assert.ok(keys.verify('', signature))
+    })
+
+    it('should handle special characters in data', function () {
+      var keys = new Keygrip(['key1'])
+      var data = 'foo=bar&baz=qux;path=/;secure'
+      var signature = keys.sign(data)
+      assert.ok(keys.verify(data, signature))
+    })
+
+    it('should handle unicode in data', function () {
+      var keys = new Keygrip(['key1'])
+      var data = 'hello=世界'
+      var signature = keys.sign(data)
+      assert.ok(keys.verify(data, signature))
+    })
+
+    it('should handle long keys', function () {
+      var keys = new Keygrip(['a'.repeat(1000)])
+      var signature = keys.sign('data')
+      assert.ok(keys.verify('data', signature))
+    })
+
+    it('should handle many keys in rotation', function () {
+      var keyList = []
+      for (var i = 0; i < 100; i++) {
+        keyList.push('key' + i)
+      }
+      var keys = new Keygrip(keyList)
+      var signature = keys.sign('data')
+      assert.strictEqual(keys.index('data', signature), 0)
+    })
+
+    it('should reject signatures with different lengths', function () {
+      var keys = new Keygrip(['key1'])
+      var signature = keys.sign('data')
+      var shortSignature = signature.slice(0, 10)
+      var longSignature = signature + 'extra'
+      assert.ok(!keys.verify('data', shortSignature))
+      assert.ok(!keys.verify('data', longSignature))
     })
   })
 })

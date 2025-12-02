@@ -9,8 +9,7 @@
   "license": "MIT",
   "repository": "pillarjs/cookies",
   "dependencies": {
-    "depd": "~2.0.0",
-    "keygrip": "~1.1.0"
+    "depd": "~2.0.0"
   },
   "devDependencies": {
     "eslint": "8.56.0",
