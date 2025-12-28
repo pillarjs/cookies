@@ -1,6 +1,6 @@
 var assert = require('assert')
-  , keys = require('keygrip')(['a', 'b'])
   , Cookies = require('../')
+  , keys = new Cookies.Keygrip(['a', 'b'])
   , request = require('supertest')
 
 var restify = tryRequire('restify')

@@ -1,7 +1,8 @@
 
 var assert = require( "assert" )
-  , keys = require( "keygrip" )(['a', 'b'])
-  , cookies = require( "../" ).express
+  , Cookies = require( "../" )
+  , keys = new Cookies.Keygrip(['a', 'b'])
+  , cookies = Cookies.express
   , request = require('supertest')
 
 var express = tryRequire('express')

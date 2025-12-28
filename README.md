@@ -7,7 +7,7 @@ Cookies
 [![Build Status][ci-image]][ci-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
 
-Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S) cookies. Cookies can be signed to prevent tampering, using [Keygrip](https://www.npmjs.com/package/keygrip). It can be used with the built-in node.js HTTP library, or as Connect/Express middleware.
+Cookies is a [node.js](http://nodejs.org/) module for getting and setting HTTP(S) cookies. Cookies can be signed to prevent tampering, using Keygrip (included). It can be used with the built-in node.js HTTP library, or as Connect/Express middleware.
 
 ## Install
 
@@ -27,7 +27,7 @@ $ npm install cookies
 
 * **Unobtrusive**: Signed cookies are stored the same way as unsigned cookies, instead of in an obfuscated signing format. An additional signature cookie is stored for each signed cookie, using a standard naming convention (_cookie-name_`.sig`). This allows other libraries to access the original cookies without having to know the signing mechanism.
 
-* **Agnostic**: This library is optimized for use with [Keygrip](https://www.npmjs.com/package/keygrip), but does not require it; you can implement your own signing scheme instead if you like and use this library only to read/write cookies. Factoring the signing into a separate library encourages code reuse and allows you to use the same signing library for other areas where signing is needed, such as in URLs.
+* **Agnostic**: This library includes Keygrip for signing, but does not require it; you can implement your own signing scheme instead if you like and use this library only to read/write cookies.
 
 ## API
 
@@ -35,7 +35,7 @@ $ npm install cookies
 
 Create a new cookie jar for a given `request` and `response` pair. The `request` argument is a [Node.js HTTP incoming request object](https://nodejs.org/dist/latest-v16.x/docs/api/http.html#class-httpincomingmessage) and the `response` argument is a [Node.js HTTP server response object](https://nodejs.org/dist/latest-v16.x/docs/api/http.html#class-httpserverresponse).
 
-A [Keygrip](https://www.npmjs.com/package/keygrip) object or an array of keys can optionally be passed as `options.keys` to enable cryptographic signing based on SHA1 HMAC, using rotated credentials.
+A Keygrip object or an array of keys can optionally be passed as `options.keys` to enable cryptographic signing based on SHA1 HMAC, using rotated credentials.
 
 A Boolean can optionally be passed as `options.secure` to explicitally specify if the connection is secure, rather than this module examining `request`.
 
@@ -51,7 +51,7 @@ This extracts the cookie with the given name from the `Cookie` header in the req
 
 `{ signed: true }` can optionally be passed as the second parameter _options_. In this case, a signature cookie (a cookie of same name ending with the `.sig` suffix appended) is fetched. If no such cookie exists, nothing is returned.
 
-If the signature cookie _does_ exist, the provided [Keygrip](https://www.npmjs.com/package/keygrip) object is used to check whether the hash of _cookie-name_=_cookie-value_ matches that of any registered key:
+If the signature cookie _does_ exist, the provided Keygrip object is used to check whether the hash of _cookie-name_=_cookie-value_ matches that of any registered key:
 
 * If the signature cookie hash matches the first key, the original cookie value is returned.
 * If the signature cookie hash matches any other key, the original cookie value is returned AND an outbound header is set to update the signature cookie's value to the hash of the first key. This enables automatic freshening of signature cookies that have become stale due to key rotation.
@@ -74,7 +74,7 @@ If the _options_ object is provided, it will be used to generate the outbound co
 * `partitioned`: a boolean indicating whether to partition the cookie in Chrome for the [CHIPS Update](https://developers.google.com/privacy-sandbox/3pcd/chips) (`false` by default). If this is true, Cookies from embedded sites will be partitioned and only readable from the same top level site from which it was created.
 * `priority`: a string indicating the cookie priority. This can be set to `'low'`, `'medium'`, or `'high'`.
 * `sameSite`: a boolean or string indicating whether the cookie is a "same site" cookie (`false` by default). This can be set to `'strict'`, `'lax'`, `'none'`, or `true` (which maps to `'strict'`).
-* `signed`: a boolean indicating whether the cookie is to be signed (`false` by default). If this is true, another cookie of the same name with the `.sig` suffix appended will also be sent, with a 27-byte url-safe base64 SHA1 value representing the hash of _cookie-name_=_cookie-value_ against the first [Keygrip](https://www.npmjs.com/package/keygrip) key. This signature key is used to detect tampering the next time a cookie is received.
+* `signed`: a boolean indicating whether the cookie is to be signed (`false` by default). If this is true, another cookie of the same name with the `.sig` suffix appended will also be sent, with a 27-byte url-safe base64 SHA1 value representing the hash of _cookie-name_=_cookie-value_ against the first Keygrip key. This signature key is used to detect tampering the next time a cookie is received.
 * `overwrite`: a boolean indicating whether to overwrite previously set cookies of the same name (`false` by default). If this is true, all cookies set during the same request with the same name (regardless of path or domain) are filtered out of the Set-Cookie header when setting this cookie.
 
 ### Secure cookies

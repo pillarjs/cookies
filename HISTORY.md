@@ -1,3 +1,8 @@
+unreleased
+==========
+
+  * Inline `keygrip` dependency (no longer requires external package)
+
 0.9.1 / 2024-01-01
 ==================
 
