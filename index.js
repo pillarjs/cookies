@@ -83,6 +83,7 @@ function Cookies(request, response, options) {
 Cookies.prototype.get = function(name, opts) {
   var sigName = name + ".sig"
     , header, match, value, remote, data, index
+    , remoteSig, remoteOpts
     , signed = opts && opts.signed !== undefined ? opts.signed : !!this.keys
 
   header = this.request.headers["cookie"]
@@ -97,15 +98,17 @@ Cookies.prototype.get = function(name, opts) {
 
   remote = this.get(sigName)
   if (!remote) return
+  remoteSig = parseSignedValue(remote, this.keys)
+  remoteOpts = remoteSig.options
 
   data = name + "=" + value
   if (!this.keys) throw new Error('.keys required for signed cookies');
-  index = this.keys.index(data, remote)
+  index = this.keys.index(data, remoteSig.value)
 
   if (index < 0) {
     this.set(sigName, null, {path: "/", signed: false })
   } else {
-    index && this.set(sigName, this.keys.sign(data), { signed: false })
+    index && this.set(sigName, this.keys.sign(data), cloneSignedOptions(remoteOpts, { signed: false }))
     return value
   }
 };
@@ -139,7 +142,15 @@ Cookies.prototype.set = function(name, value, opts) {
 
   if (opts && signed) {
     if (!this.keys) throw new Error('.keys required for signed cookies');
-    cookie.value = this.keys.sign(cookie.toString())
+    var signature = this.keys.sign(cookie.toString())
+    var options = getCookieOptions(cookie)
+    var signed = {
+      sig: signature,
+      opts: options,
+      optsSig: this.keys.sign(JSON.stringify(options))
+    }
+
+    cookie.value = JSON.stringify(signed)
     cookie.name += ".sig"
     pushCookie(headers, cookie)
   }
@@ -148,7 +159,6 @@ Cookies.prototype.set = function(name, value, opts) {
   setHeader.call(res, 'Set-Cookie', headers)
   return this
 };
-
 function Cookie(name, value, attrs) {
   if (!fieldContentRegExp.test(name) || RESTRICTED_NAME_CHARS_REGEXP.test(name)) {
     throw new TypeError('argument name is invalid');
@@ -263,6 +273,22 @@ function isRequestEncrypted (req) {
     : req.connection.encrypted
 }
 
+function getCookieOptions (cookie) {
+  var options = {}
+  if (cookie.path !== undefined) options.path = cookie.path
+  if (cookie.maxAge !== undefined) options.maxAge = cookie.maxAge
+  if (cookie.domain !== undefined) options.domain = cookie.domain
+  if (cookie.priority !== undefined) options.priority = cookie.priority
+  if (cookie.sameSite !== undefined) options.sameSite = cookie.sameSite
+  if (cookie.secure !== undefined) options.secure = cookie.secure
+  if (cookie.httpOnly !== undefined) options.httpOnly = cookie.httpOnly
+  if (cookie.partitioned !== undefined) options.partitioned = cookie.partitioned
+  if (cookie.expires !== undefined) options.expires = cookie.expires
+  if (cookie.overwrite !== undefined) options.overwrite = cookie.overwrite
+
+  return options
+}
+
 function pushCookie(headers, cookie) {
   if (cookie.overwrite) {
     for (var i = headers.length - 1; i >= 0; i--) {
@@ -273,6 +299,62 @@ function pushCookie(headers, cookie) {
   }
 
   headers.push(cookie.toHeader())
+}
+
+function parseSignedValue (value, keys) {
+  try {
+    var parsed = JSON.parse(value)
+      , signature
+
+    if (!parsed
+      || typeof parsed !== 'object'
+      || typeof parsed.sig !== 'string'
+      || typeof parsed.optsSig !== 'string'
+      || typeof parsed.opts !== 'object'
+      || parsed.opts === null
+    ) {
+      throw new Error('invalid')
+    }
+
+    signature = keys && keys.index(JSON.stringify(parsed.opts), parsed.optsSig)
+    if (signature < 0) {
+      throw new Error('invalid')
+    }
+
+    return {
+      value: parsed.sig,
+      options: parsed.opts
+    }
+  } catch (e) {
+    return {
+      value: value
+    }
+  }
+}
+
+function cloneSignedOptions (options, base) {
+  var clone = {
+    signed: false
+  }
+  var key
+
+  if (base) {
+    for (key in base) {
+      if (base.hasOwnProperty(key)) clone[key] = base[key]
+    }
+  }
+
+  if (!options || typeof options !== 'object') return clone
+
+  for (key in options) {
+    if (key === 'expires') {
+      clone[key] = new Date(options[key])
+    } else {
+      clone[key] = options[key]
+    }
+  }
+
+  return clone
 }
 
 Cookies.connect = Cookies.express = function(keys) {

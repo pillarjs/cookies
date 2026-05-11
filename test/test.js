@@ -170,6 +170,41 @@ describe('new Cookies(req, res, [options])', function () {
               .expect(shouldSetCookieToValue('foo.sig', 'tecF04p5ua6TnfYxUTDskgWSKJE'))
               .end(done)
           })
+
+          it('should preserve cookie attributes when re-signing', function (done) {
+            var opts = { keys: ['keyboard cat b'] }
+              , refreshOpts = { keys: ['keyboard cat a', 'keyboard cat b'] }
+              , maxAge = 86400000
+
+            request(createServer(opts, setCookieHandler('foo', 'bar', {
+              signed: true,
+              path: '/admin',
+              domain: 'example.com',
+              maxAge: maxAge
+            })))
+              .get('/')
+              .expect(200)
+              .end(function (err, res) {
+                if (err) return done(err)
+
+                var signedCookie = getCookieForName(res, 'foo.sig')
+                assert.ok(signedCookie, 'should set signed cookie')
+
+                request(createServer(refreshOpts, getCookieHandler('foo', { signed: true })))
+                  .get('/')
+                  .set('Cookie', 'foo=bar; foo.sig=' + signedCookie.value)
+                  .expect(200, 'bar')
+                  .expect(shouldSetCookieCount(1))
+                  .expect(shouldSetCookieWithAttributeAndValue('foo.sig', 'path', '/admin'))
+                  .expect(shouldSetCookieWithAttributeAndValue('foo.sig', 'domain', 'example.com'))
+                  .expect(function (res) {
+                    var cookie = getCookieForName(res, 'foo.sig')
+                    var expected = new Date(Date.parse(res.headers.date) + maxAge).toUTCString()
+                    assert.equal(cookie.expires, expected, 'should refresh expires')
+                  })
+                  .end(done)
+              })
+          })
         })
       })
     })
@@ -513,7 +548,7 @@ describe('new Cookies(req, res, [options])', function () {
             .expect(200)
             .expect(shouldSetCookieCount(2))
             .expect(shouldSetCookieToValue('foo', 'bar'))
-            .expect(shouldSetCookieToValue('foo.sig', 'iW2fuCIzk9Cg_rqLT1CAqrtdWs8'))
+            .expect(shouldSetSignedCookieToValue('foo.sig', 'iW2fuCIzk9Cg_rqLT1CAqrtdWs8'))
             .end(done)
         })
 
@@ -525,7 +560,7 @@ describe('new Cookies(req, res, [options])', function () {
             .expect(200)
             .expect(shouldSetCookieCount(2))
             .expect(shouldSetCookieToValue('foo', 'bar'))
-            .expect(shouldSetCookieToValue('foo.sig', 'tecF04p5ua6TnfYxUTDskgWSKJE'))
+            .expect(shouldSetSignedCookieToValue('foo.sig', 'tecF04p5ua6TnfYxUTDskgWSKJE'))
             .end(done)
         })
 
@@ -569,7 +604,7 @@ describe('new Cookies(req, res, [options])', function () {
               .expect(200)
               .expect(shouldSetCookieCount(2))
               .expect(shouldSetCookieToValue('foo', 'baz'))
-              .expect(shouldSetCookieToValue('foo.sig', 'ptOkbbiPiGfLWRzz1yXP3XqaW4E'))
+              .expect(shouldSetSignedCookieToValue('foo.sig', 'ptOkbbiPiGfLWRzz1yXP3XqaW4E'))
               .end(done)
           })
         })
@@ -714,11 +749,30 @@ function shouldSetCookieToValue (name, val) {
   }
 }
 
+function shouldSetSignedCookieToValue (name, val) {
+  return function (res) {
+    var cookie = getCookieForName(res, name)
+    var signedCookie = parseSignedValue(cookie.value)
+
+    assert.ok(cookie, 'should set cookie ' + name)
+    assert.equal(signedCookie.sig, val, 'should set cookie ' + name + ' to ' + val)
+  }
+}
+
 function shouldSetCookieWithAttribute (name, attrib) {
   return function (res) {
     var cookie = getCookieForName(res, name)
     assert.ok(cookie, 'should set cookie ' + name)
     assert.ok((attrib.toLowerCase() in cookie), 'should set cookie with attribute ' + attrib)
+  }
+}
+
+function parseSignedValue (val) {
+  try {
+    var parsed = JSON.parse(val)
+    return parsed
+  } catch (e) {
+    return { sig: val }
   }
 }
 

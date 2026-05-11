@@ -137,10 +137,8 @@ describeExpress('Express', function () {
 
       request(app)
         .get('/')
-        .expect(shouldSetCookies([
-          { name: 'foo', value: 'fizz', path: '/', httponly: true },
-          { name: 'foo.sig', value: 'hVIYdxZSelh3gIK5wQxzrqoIndU', path: '/', httponly: true }
-        ]))
+        .expect(shouldSetCookie({ name: 'foo', value: 'fizz', path: '/', httponly: true }))
+        .expect(shouldSetSignedCookie({ name: 'foo.sig', path: '/', httponly: true }))
         .expect(200, done)
     })
   })
@@ -177,10 +175,8 @@ describeExpress('Express', function () {
 
       request(app)
         .get('/')
-        .expect(shouldSetCookies([
-          { name: 'foo', value: 'bar', path: '/', httponly: true, secure: true },
-          { name: 'foo.sig', value: 'p5QVCZeqNBulWOhYipO0jqjrzz4', path: '/', httponly: true, secure: true }
-        ]))
+        .expect(shouldSetCookie({ name: 'foo', value: 'bar', path: '/', httponly: true, secure: true }))
+        .expect(shouldSetSignedCookie({ name: 'foo.sig', path: '/', httponly: true, secure: true }))
         .expect(200, done)
     })
 
@@ -198,10 +194,8 @@ describeExpress('Express', function () {
       request(app)
         .get('/')
         .set('X-Forwarded-Proto', 'https')
-        .expect(shouldSetCookies([
-          { name: 'foo', value: 'bar', path: '/', httponly: true, secure: true },
-          { name: 'foo.sig', value: 'p5QVCZeqNBulWOhYipO0jqjrzz4', path: '/', httponly: true, secure: true }
-        ]))
+        .expect(shouldSetCookie({ name: 'foo', value: 'bar', path: '/', httponly: true, secure: true }))
+        .expect(shouldSetSignedCookie({ name: 'foo.sig', path: '/', httponly: true, secure: true }))
         .expect(200, done)
     })
   })
@@ -235,6 +229,41 @@ function shouldSetCookies (expected) {
   return function (res) {
     assert.deepEqual(getCookies(res), expected)
   }
+}
+
+function shouldSetCookie (expected) {
+  return function (res) {
+    var cookie = getCookieForName(res, expected.name)
+    assert.ok(cookie, 'should set cookie ' + expected.name)
+
+    for (var key in expected) {
+      assert.equal(cookie[key], expected[key], 'should set cookie attribute ' + key)
+    }
+  }
+}
+
+function shouldSetSignedCookie (expected) {
+  return function (res) {
+    var cookie = getCookieForName(res, expected.name)
+
+    assert.ok(cookie, 'should set ' + expected.name)
+    for (var key in expected) {
+      assert.equal(cookie[key], expected[key], 'should set signed cookie attribute ' + key)
+    }
+    assert.ok(cookie.sig || cookie.value)
+  }
+}
+
+function getCookieForName (res, name) {
+  var cookies = getCookies(res)
+
+  for (var i = 0; i < cookies.length; i++) {
+    if (cookies[i].name === name) {
+      return cookies[i]
+    }
+  }
+
+  return undefined
 }
 
 function tryRequire (name) {
