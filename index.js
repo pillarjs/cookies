@@ -154,6 +154,10 @@ function Cookie(name, value, attrs) {
     throw new TypeError('argument name is invalid');
   }
 
+  if (value != null && typeof value !== 'string') {
+    throw new TypeError('argument value must be a string');
+  }
+
   if (value && (!fieldContentRegExp.test(value) || RESTRICTED_VALUE_CHARS_REGEXP.test(value))) {
     throw new TypeError('argument value is invalid');
   }
