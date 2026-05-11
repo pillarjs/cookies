@@ -496,6 +496,29 @@ describe('new Cookies(req, res, [options])', function () {
     })
 
     describe('"signed" option', function () {
+      describe('when omitted', function () {
+        it('should default to signed when .keys are present', function (done) {
+          var opts = { keys: ['keyboard cat'] }
+
+          request(createServer(opts, setCookieHandler('foo', 'bar')))
+            .get('/')
+            .expect(200)
+            .expect(shouldSetCookieCount(2))
+            .expect(shouldSetCookieToValue('foo', 'bar'))
+            .expect(shouldSetCookieToValue('foo.sig', 'iW2fuCIzk9Cg_rqLT1CAqrtdWs8'))
+            .end(done)
+        })
+
+        it('should not set additional .sig cookie when .keys are not present', function (done) {
+          request(createServer(setCookieHandler('foo', 'bar')))
+            .get('/')
+            .expect(200)
+            .expect(shouldSetCookieCount(1))
+            .expect(shouldSetCookieToValue('foo', 'bar'))
+            .end(done)
+        })
+      })
+
       describe('when true', function () {
         it('should throw without .keys', function (done) {
           request(createServer(setCookieHandler('foo', 'bar', { signed: true })))
