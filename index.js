@@ -159,7 +159,9 @@ function Cookie(name, value, attrs) {
   }
 
   this.name = name
-  this.value = value || ""
+  this.value = value || value === 0
+    ? String(value)
+    : ""
 
   for (var name in attrs) {
     this[name] = attrs[name]
