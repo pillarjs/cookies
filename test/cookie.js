@@ -84,6 +84,23 @@ describe('new Cookie(name, value, [options])', function () {
           new cookies.Cookie('foo', 'bar', { maxAge: NaN })
         }, /option maxAge is invalid/)
       })
+
+      it('should set expires for zero maxAge', function () {
+        var before = Date.now()
+        var cookie = new cookies.Cookie('foo', 'bar', { maxAge: 0 })
+        var header = cookie.toHeader()
+        var parts = header.split('; ')
+        var expiresPart = parts.filter(function (part) {
+          return part.indexOf('expires=') === 0
+        })[0]
+        assert.ok(expiresPart, 'should include expires attribute')
+
+        var match = /expires=(.+)/.exec(expiresPart)
+        var expires = Date.parse(match[1])
+
+        assert.ok(match)
+        assert.ok(expires >= (before - 1000))
+      })
     })
 
     describe('partitioned', function () {
