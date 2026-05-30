@@ -154,18 +154,27 @@ function Cookie(name, value, attrs) {
     throw new TypeError('argument name is invalid');
   }
 
-  if (value && (!fieldContentRegExp.test(value) || RESTRICTED_VALUE_CHARS_REGEXP.test(value))) {
-    throw new TypeError('argument value is invalid');
+  this.name = name
+
+  var isNullValue = value == null
+
+  if (value == null) {
+    this.value = ''
+    this.maxAge = null
+    this.expires = new Date(0)
+  } else {
+    this.value = String(value)
   }
 
-  this.name = name
-  this.value = value || ""
+  if (this.value && (!fieldContentRegExp.test(this.value) || RESTRICTED_VALUE_CHARS_REGEXP.test(this.value))) {
+    throw new TypeError('argument value is invalid');
+  }
 
   for (var name in attrs) {
     this[name] = attrs[name]
   }
 
-  if (!this.value) {
+  if (isNullValue) {
     this.expires = new Date(0)
     this.maxAge = null
   }
@@ -208,7 +217,7 @@ Cookie.prototype.toString = function() {
 Cookie.prototype.toHeader = function() {
   var header = this.toString()
 
-  if (this.maxAge) this.expires = new Date(Date.now() + this.maxAge);
+  if (this.maxAge != null) this.expires = new Date(Date.now() + this.maxAge);
 
   if (this.path     ) header += "; path=" + this.path
   if (this.expires  ) header += "; expires=" + this.expires.toUTCString()

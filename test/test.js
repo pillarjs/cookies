@@ -200,6 +200,24 @@ describe('new Cookies(req, res, [options])', function () {
         .end(done)
     })
 
+    it('should set numeric zero value', function (done) {
+      request(createServer(setCookieHandler('foo', 0)))
+        .get('/')
+        .expect(200)
+        .expect(shouldSetCookieToValue('foo', '0'))
+        .end(done)
+    })
+
+    it('should set empty string value', function (done) {
+      request(createServer(setCookieHandler('foo', '')))
+        .get('/')
+        .expect(200)
+        .expect(shouldSetCookieCount(1))
+        .expect(shouldSetCookieToValue('foo', ''))
+        .expect(shouldSetCookieWithoutAttribute('foo', 'expires'))
+        .end(done)
+    })
+
     describe('when value is falsy', function () {
       it('should delete cookie', function (done) {
         request(createServer(setCookieHandler('foo', null)))
