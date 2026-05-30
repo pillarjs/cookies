@@ -262,7 +262,9 @@ function getPattern (name) {
 function isRequestEncrypted (req) {
   return req.socket
     ? req.socket.encrypted
-    : req.connection.encrypted
+    : req.connection
+      ? req.connection.encrypted
+      : false
 }
 
 function pushCookie(headers, cookie) {
