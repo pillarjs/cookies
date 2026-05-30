@@ -154,20 +154,27 @@ function Cookie(name, value, attrs) {
     throw new TypeError('argument name is invalid');
   }
 
-  if (value && (!fieldContentRegExp.test(value) || RESTRICTED_VALUE_CHARS_REGEXP.test(value))) {
-    throw new TypeError('argument value is invalid');
+  this.name = name
+
+  var isNullValue = value == null
+
+  if (value == null) {
+    this.value = ''
+    this.maxAge = null
+    this.expires = new Date(0)
+  } else {
+    this.value = String(value)
   }
 
-  this.name = name
-  this.value = value || value === 0
-    ? String(value)
-    : ""
+  if (this.value && (!fieldContentRegExp.test(this.value) || RESTRICTED_VALUE_CHARS_REGEXP.test(this.value))) {
+    throw new TypeError('argument value is invalid');
+  }
 
   for (var name in attrs) {
     this[name] = attrs[name]
   }
 
-  if (!this.value) {
+  if (isNullValue) {
     this.expires = new Date(0)
     this.maxAge = null
   }

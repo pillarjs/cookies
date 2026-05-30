@@ -13,6 +13,11 @@ describe('new Cookie(name, value, [options])', function () {
     assert.strictEqual(cookie.toHeader(), 'foo=0; path=/; httponly')
   })
 
+  it('should preserve empty value', function () {
+    var cookie = new cookies.Cookie('foo', '')
+    assert.strictEqual(cookie.toHeader(), 'foo=; path=/; httponly')
+  })
+
   it('should throw on invalid name', function () {
     assert.throws(function () {
       new cookies.Cookie('foo\n', 'bar')
