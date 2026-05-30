@@ -144,7 +144,9 @@ Cookies.prototype.set = function(name, value, opts) {
     pushCookie(headers, cookie)
   }
 
-  var setHeader = res.set ? http.OutgoingMessage.prototype.setHeader : res.setHeader
+  var setHeader = typeof res.setHeader === "function"
+    ? res.setHeader
+    : http.OutgoingMessage.prototype.setHeader
   setHeader.call(res, 'Set-Cookie', headers)
   return this
 };

@@ -184,6 +184,26 @@ describe('new Cookies(req, res, [options])', function () {
         .end(done)
     })
 
+    it('should call response setHeader when it is available alongside set', function () {
+      var req = { socket: { encrypted: false } }
+      var res = {
+        set: function () {},
+        setHeaderCalls: [],
+        getHeader: function () {},
+        setHeader: function (name, value) {
+          this.setHeaderCalls.push([name, value])
+        }
+      }
+
+      var cookies = new Cookies(req, res)
+      cookies.set('foo', 'bar')
+
+      assert.equal(res.setHeaderCalls.length, 1)
+      assert.equal(res.setHeaderCalls[0][0], 'Set-Cookie')
+      assert.equal(res.setHeaderCalls[0][1][0], 'foo=bar; path=/; httponly')
+      assert.equal(res.setHeaderCalls[0][1].length, 1)
+    })
+
     it('should work for cookie name with special characters', function (done) {
       request(createServer(setCookieHandler('foo*(#bar)?.|$', 'buzz')))
         .get('/')
