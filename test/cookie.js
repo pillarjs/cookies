@@ -26,6 +26,11 @@ describe('new Cookie(name, value, [options])', function () {
     }, /argument value is invalid/)
   })
 
+  it('should set value of 0', function () {
+    var cookie = new cookies.Cookie('foo', 0)
+    assert.strictEqual(cookie.toHeader(), 'foo=0; path=/; httponly')
+  })
+
   it('should throw on invalid path', function () {
     assert.throws(function () {
       new cookies.Cookie('foo', 'bar', { path: '/\n' })
