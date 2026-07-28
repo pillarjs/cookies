@@ -159,13 +159,13 @@ function Cookie(name, value, attrs) {
   }
 
   this.name = name
-  this.value = value || ""
+  this.value = value ?? ""
 
   for (var name in attrs) {
     this[name] = attrs[name]
   }
 
-  if (!this.value) {
+  if (this.value === "") {
     this.expires = new Date(0)
     this.maxAge = null
   }
