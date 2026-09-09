@@ -21,9 +21,6 @@
     "supertest": "6.3.3"
   },
   "files": [
-    "HISTORY.md",
-    "LICENSE",
-    "README.md",
     "index.js"
   ],
   "engines": {
