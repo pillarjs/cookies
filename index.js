@@ -100,6 +100,8 @@ function Cookies(request, response, options) {
   }
 }
 
+Cookie.prototype = Object.create(null); // To isolate prototype
+
 Cookies.prototype.get = function(name, opts) {
   var sigName = name + ".sig"
     , header, match, value, remote, data, index
