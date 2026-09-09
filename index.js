@@ -22,6 +22,26 @@ var http = require('http')
 var fieldContentRegExp = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
 
 /**
+ * RegExp to match domain-value in RFC 6265 sec 4.1.1
+ *
+ * domain-value = <subdomain>
+ *              ; defined in [RFC1034], Section 3.5, as
+ *              ; enhanced by [RFC1123], Section 2.1
+ * A leading dot is permitted per RFC 6265 sec 5.2.3.
+ */
+
+var DOMAIN_VALUE_REGEXP = /^([.]?[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)([.][a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$/i
+
+/**
+ * RegExp to match path-value in RFC 6265 sec 4.1.1
+ *
+ * path-value = <any CHAR except CTLs or ";">
+ * CHAR       = %x01-7F
+ */
+
+var PATH_VALUE_REGEXP = /^[ -:=-~]*$/
+
+/**
  * RegExp to match Priority cookie attribute value.
  */
 
@@ -170,11 +190,11 @@ function Cookie(name, value, attrs) {
     this.maxAge = null
   }
 
-  if (this.path && !fieldContentRegExp.test(this.path)) {
+  if (this.path && !PATH_VALUE_REGEXP.test(this.path)) {
     throw new TypeError('option path is invalid');
   }
 
-  if (this.domain && !fieldContentRegExp.test(this.domain)) {
+  if (this.domain && !DOMAIN_VALUE_REGEXP.test(this.domain)) {
     throw new TypeError('option domain is invalid');
   }
 

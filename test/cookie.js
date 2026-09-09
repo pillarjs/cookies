@@ -38,6 +38,38 @@ describe('new Cookie(name, value, [options])', function () {
     }, /option domain is invalid/)
   })
 
+  //@see https://github.com/pillarjs/cookies/security/advisories/GHSA-x44v-5gxf-r6hf
+  it('should throw on path with a semicolon (attribute injection)', function () {
+    assert.throws(function () {
+      new cookies.Cookie('foo', 'bar', { path: '/; samesite=none' })
+    }, /option path is invalid/)
+  })
+
+  it('should throw on domain with a semicolon (attribute injection)', function () {
+    assert.throws(function () {
+      new cookies.Cookie('foo', 'bar', { domain: 'tenant.example.com; SameSite=None; Injected=yes' })
+    }, /option domain is invalid/)
+  })
+
+  it('should throw on domain with out-of-bounds characters', function () {
+    assert.throws(function () {
+      new cookies.Cookie('foo', 'bar', { domain: 'exa mple.com' })
+    }, /option domain is invalid/)
+    assert.throws(function () {
+      new cookies.Cookie('foo', 'bar', { domain: 'example.com/path' })
+    }, /option domain is invalid/)
+  })
+
+  it('should accept a valid path and serialize it', function () {
+    var cookie = new cookies.Cookie('foo', 'bar', { path: '/admin' })
+    assert.equal(cookie.toHeader(), 'foo=bar; path=/admin; httponly')
+  })
+
+  it('should accept a valid domain and serialize it', function () {
+    var cookie = new cookies.Cookie('foo', 'bar', { domain: '.example.com' })
+    assert.equal(cookie.toHeader(), 'foo=bar; path=/; domain=.example.com; httponly')
+  })
+
   describe('options', function () {
     describe('maxage', function () {
       it('should set the .maxAge property', function () {
