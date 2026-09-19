@@ -184,6 +184,14 @@ describe('new Cookies(req, res, [options])', function () {
         .end(done)
     })
 
+    it('should set cookie when value is 0', function (done) {
+      request(createServer(setCookieHandler('foo', 0)))
+        .get('/')
+        .expect(200)
+        .expect(shouldSetCookieToValue('foo', '0'))
+        .end(done)
+    })
+
     it('should work for cookie name with special characters', function (done) {
       request(createServer(setCookieHandler('foo*(#bar)?.|$', 'buzz')))
         .get('/')
