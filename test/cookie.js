@@ -38,6 +38,33 @@ describe('new Cookie(name, value, [options])', function () {
     }, /option domain is invalid/)
   })
 
+  it('should throw on an invalid expiration date', function () {
+    assert.throws(function () {
+      new cookies.Cookie('foo', 'bar', { expires: new Date(NaN) }).toHeader()
+    }, /option expires is invalid/)
+  })
+
+  it('should throw when maxAge produces an invalid expiration date', function () {
+    assert.throws(function () {
+      new cookies.Cookie('foo', 'bar', { maxAge: Number.MAX_VALUE }).toHeader()
+    }, /option expires is invalid/)
+  })
+
+  it('should let maxAge override an invalid expiration date', function () {
+    var cookie = new cookies.Cookie('foo', 'bar', {
+      expires: new Date(NaN),
+      maxAge: 86400000
+    })
+    assert.ok(cookie.toHeader().indexOf('expires=Invalid Date') === -1)
+    assert.ok(isFinite(cookie.expires.getTime()))
+  })
+
+  it('should accept a valid expiration date', function () {
+    var expires = new Date('2030-01-01T00:00:00Z')
+    var cookie = new cookies.Cookie('foo', 'bar', { expires: expires })
+    assert.ok(cookie.toHeader().indexOf('expires=Tue, 01 Jan 2030 00:00:00 GMT') !== -1)
+  })
+
   //@see https://github.com/pillarjs/cookies/security/advisories/GHSA-x44v-5gxf-r6hf
   it('should throw on path with a semicolon (attribute injection)', function () {
     assert.throws(function () {

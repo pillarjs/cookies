@@ -230,6 +230,10 @@ Cookie.prototype.toHeader = function() {
 
   if (this.maxAge) this.expires = new Date(Date.now() + this.maxAge);
 
+  if (this.expires && Object.prototype.toString.call(this.expires) === '[object Date]' && isNaN(this.expires.getTime())) {
+    throw new TypeError('option expires is invalid')
+  }
+
   if (this.path     ) header += "; path=" + this.path
   if (this.expires  ) header += "; expires=" + this.expires.toUTCString()
   if (this.domain   ) header += "; domain=" + this.domain
